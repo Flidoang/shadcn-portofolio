@@ -1,0 +1,25 @@
+<script setup lang="ts">
+import { useColorMode } from "@vueuse/core";
+import { computed } from "vue";
+import { ParticlesBg } from "@/components/ui/particles-bg";
+
+const isDark = computed(() => useColorMode().value === "dark");
+</script>
+
+<template>
+  <div
+    class="bg-background relative flex min-h-screen w-full flex-col items-center justify-center"
+  >
+    <ParticlesBg
+      :key="isDark.toString()"
+      class="absolute inset-0"
+      :quantity="100"
+      :ease="100"
+      :color="isDark ? '#FFF' : '#000'"
+      :staticity="10"
+      refresh
+    />
+    <slot />
+  </div>
+</template>
+
