@@ -14,7 +14,7 @@ interface Props {
 const props = defineProps<Props>();
 
 // Import semua SVG dari folder assets secara dinamis
-const svgModules = import.meta.glob<string>("../assets/*.svg", {
+const svgModules = import.meta.glob<string>("../assets/logo/*.svg", {
   eager: true,
   import: "default",
 });
