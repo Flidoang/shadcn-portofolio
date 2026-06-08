@@ -1,15 +1,14 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import {
   MapPin,
-  Music,
   Sparkles,
-  Play,
-  Pause,
   ExternalLink,
 } from "@lucide/vue";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 import { fetchGitHubContributions, fetchGitHubContributionsDirect } from "@/service/timelineGithub";
+import { fetchGitLabContributions } from "@/service/timelineGitlab";
+import type { GitLabProfile } from "@/service/timelineGitlab";
 import photoUrl from "@/assets/photo.png";
 
 // Timezone Clock Logic (GMT+7)
@@ -53,26 +52,124 @@ const updateClock = () => {
   }
 };
 
+// Common Date Padding Function (starts on Sunday, ends on Saturday)
+interface RawContributionDay {
+  date: string;
+  intensity: number;
+  count?: number;
+  color?: string;
+}
+
+const processContributions = (days: RawContributionDay[]) => {
+  if (days.length === 0) return [];
+  
+  const padded = [...days];
+  
+  // Pad start to make sure first day is Sunday (day 0)
+  const firstDate = new Date(padded[0].date);
+  const firstDayOfWeek = firstDate.getDay();
+  for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+    const d = new Date(firstDate);
+    d.setDate(firstDate.getDate() - (firstDayOfWeek - i));
+    const dateStr = d.toISOString().split("T")[0];
+    padded.unshift({
+      date: dateStr,
+      intensity: 0,
+      count: 0,
+      color: ""
+    });
+  }
+  
+  // Pad end to make sure last day is Saturday (day 6)
+  const lastDate = new Date(padded[padded.length - 1].date);
+  const lastDayOfWeek = lastDate.getDay();
+  for (let i = lastDayOfWeek + 1; i <= 6; i++) {
+    const d = new Date(lastDate);
+    d.setDate(lastDate.getDate() + (i - lastDayOfWeek));
+    const dateStr = d.toISOString().split("T")[0];
+    padded.push({
+      date: dateStr,
+      intensity: 0,
+      count: 0,
+      color: ""
+    });
+  }
+  
+  return padded;
+};
+
+// GitLab live integrations
+const gitlabUsername = ref("Flidoang");
+const gitlabProfile = ref<GitLabProfile | null>(null);
+const gitlabContributions = ref<number[]>([]);
+const gitlabTotalCommits = ref(0);
+const gitlabMaxStreak = ref(0);
+const gitlabMonthLabels = ref<{ name: string; colIndex: number }[]>([]);
+const isLoadingGitLab = ref(false);
+
+const getGitLabMonthLabel = (colIndex: number) => {
+  const match = gitlabMonthLabels.value.find(m => m.colIndex === colIndex);
+  return match ? match.name : "";
+};
+
+const loadGitLabData = async () => {
+  isLoadingGitLab.value = true;
+  try {
+    const token = import.meta.env.VITE_GITLAB_TOKEN;
+    const data = await fetchGitLabContributions(gitlabUsername.value, token);
+    gitlabProfile.value = data.profile;
+    gitlabTotalCommits.value = data.totalCommits;
+    gitlabMaxStreak.value = data.maxStreak;
+    
+    // Process contributions (starts Sunday, ends Saturday)
+    const padded = processContributions(data.contributions);
+    
+    // Take the last 280 days (40 weeks)
+    const last280 = padded.slice(-280);
+    gitlabContributions.value = last280.map(day => day.intensity);
+    
+    // Generate Month Labels aligned to 40 columns
+    const labels: { name: string; colIndex: number }[] = [];
+    let prevMonth = "";
+    const totalWeeks = 40;
+    for (let w = 0; w < totalWeeks; w++) {
+      const dayData = last280[w * 7];
+      if (dayData && dayData.date) {
+        const dateObj = new Date(dayData.date);
+        const monthName = dateObj.toLocaleString("en-US", { month: "short" });
+        if (monthName !== prevMonth) {
+          labels.push({ name: monthName, colIndex: w });
+          prevMonth = monthName;
+        }
+      }
+    }
+    gitlabMonthLabels.value = labels;
+  } catch (error) {
+    console.error("Failed to load GitLab contributions:", error);
+  } finally {
+    isLoadingGitLab.value = false;
+  }
+};
+
 // GitHub live integrations
 const githubUsername = ref("Flidoang");
 const githubContributions = ref<number[]>([]);
 const totalCommits = ref(0);
 const maxStreak = ref(0);
 const isLiveGitHub = ref(false);
-const monthLabels = ref<{ name: string; colIndex: number }[]>([]);
+const githubMonthLabels = ref<{ name: string; colIndex: number }[]>([]);
 
-const getMonthLabel = (colIndex: number) => {
-  const match = monthLabels.value.find(m => m.colIndex === colIndex);
+const getGitHubMonthLabel = (colIndex: number) => {
+  const match = githubMonthLabels.value.find(m => m.colIndex === colIndex);
   return match ? match.name : "";
 };
 
 const initGithubGrid = () => {
-  const arr = [];
   const today = new Date();
-  const mockDays = [];
+  const mockDays: RawContributionDay[] = [];
   
-  // Generate mock dates backwards for 280 days (40 weeks)
-  for (let i = 279; i >= 0; i--) {
+  // Generate mock dates backwards for 300 days to ensure ample data after padding
+  for (let i = 299; i >= 0; i--) {
     const dateObj = new Date(today);
     dateObj.setDate(today.getDate() - i);
     const dateStr = dateObj.toISOString().split("T")[0];
@@ -85,29 +182,32 @@ const initGithubGrid = () => {
     else if (rand < 0.96) intensity = 3;
     else intensity = 4;
     
-    arr.push(intensity);
-    mockDays.push({ date: dateStr, intensity });
+    mockDays.push({ date: dateStr, intensity, count: intensity * 2 });
   }
   
-  githubContributions.value = arr;
+  const padded = processContributions(mockDays);
+  const last280 = padded.slice(-280);
+  githubContributions.value = last280.map(day => day.intensity);
   totalCommits.value = 430;
   maxStreak.value = 15;
   isLiveGitHub.value = false;
   
-  // Generate month labels for mock data
+  // Generate month labels (English locale)
   const labels: { name: string; colIndex: number }[] = [];
   let prevMonth = "";
   const totalWeeks = 40;
   for (let w = 0; w < totalWeeks; w++) {
-    const dayData = mockDays[w * 7];
-    const dateObj = new Date(dayData.date);
-    const monthName = dateObj.toLocaleString("id-ID", { month: "short" });
-    if (monthName !== prevMonth) {
-      labels.push({ name: monthName, colIndex: w });
-      prevMonth = monthName;
+    const dayData = last280[w * 7];
+    if (dayData && dayData.date) {
+      const dateObj = new Date(dayData.date);
+      const monthName = dateObj.toLocaleString("en-US", { month: "short" });
+      if (monthName !== prevMonth) {
+        labels.push({ name: monthName, colIndex: w });
+        prevMonth = monthName;
+      }
     }
   }
-  monthLabels.value = labels;
+  githubMonthLabels.value = labels;
 };
 
 const loadGitHubData = async () => {
@@ -125,11 +225,12 @@ const loadGitHubData = async () => {
     // Total commits in past 12 months
     totalCommits.value = data.total.lastYear || 0;
     
-    // Map contributions to our grid cells (take the last 280 days = 40 weeks)
-    const last280 = data.contributions.slice(-280);
+    // Process and pad contributions list
+    const padded = processContributions(data.contributions);
+    const last280 = padded.slice(-280);
     githubContributions.value = last280.map(day => day.intensity);
     
-    // Calculate streaks
+    // Calculate streaks from original contributions
     let current = 0;
     let max = 0;
     for (const day of data.contributions) {
@@ -143,66 +244,39 @@ const loadGitHubData = async () => {
     maxStreak.value = max;
     isLiveGitHub.value = true;
 
-    // Generate Month Labels aligned to columns
+    // Generate Month Labels aligned to columns (en-US locale)
     const labels: { name: string; colIndex: number }[] = [];
     let prevMonth = "";
-    const totalWeeks = Math.floor(last280.length / 7);
+    const totalWeeks = 40;
     for (let w = 0; w < totalWeeks; w++) {
       const dayData = last280[w * 7];
       if (dayData && dayData.date) {
         const dateObj = new Date(dayData.date);
-        const monthName = dateObj.toLocaleString("id-ID", { month: "short" });
+        const monthName = dateObj.toLocaleString("en-US", { month: "short" });
         if (monthName !== prevMonth) {
           labels.push({ name: monthName, colIndex: w });
           prevMonth = monthName;
         }
       }
     }
-    monthLabels.value = labels;
+    githubMonthLabels.value = labels;
   } catch (error) {
     console.error("Failed to load live GitHub contributions, falling back to mock data:", error);
     initGithubGrid();
   }
 };
 
-// Spotify player reactive logic
-const isPlaying = ref(true);
-const currentProgress = ref(84); // Starts at 1:24
-const totalDuration = 225; // 3:45 in seconds
-
-const progressPercent = computed(() => (currentProgress.value / totalDuration) * 100);
-const formattedProgress = computed(() => {
-  const min = Math.floor(currentProgress.value / 60);
-  const sec = currentProgress.value % 60;
-  return `${min}:${sec < 10 ? "0" : ""}${sec}`;
-});
-const formattedDuration = "3:45";
-
-const togglePlayback = () => {
-  isPlaying.value = !isPlaying.value;
-};
-
 let clockInterval: any = null;
-let spotifyInterval: any = null;
 
 onMounted(() => {
   updateClock();
   clockInterval = setInterval(updateClock, 1000);
   loadGitHubData();
-  
-  spotifyInterval = setInterval(() => {
-    if (isPlaying.value) {
-      currentProgress.value += 1;
-      if (currentProgress.value >= totalDuration) {
-        currentProgress.value = 0;
-      }
-    }
-  }, 1000);
+  loadGitLabData();
 });
 
 onUnmounted(() => {
   if (clockInterval) clearInterval(clockInterval);
-  if (spotifyInterval) clearInterval(spotifyInterval);
 });
 </script>
 
@@ -225,46 +299,43 @@ onUnmounted(() => {
       <!-- Bento Grid Container -->
       <BentoGrid class="gap-6 md:auto-rows-[16rem] lg:auto-rows-[18rem] w-full">
         
-        <!-- Box 1: Profile & Bio (col-span-2, row-span-2) -->
-        <BentoGridItem class="md:col-span-2 md:row-span-2 bg-card/30 backdrop-blur-xl border border-border/60 rounded-3xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] hover:border-primary/40 group flex flex-col justify-between gap-6">
+        <!-- Box 1: Profile & Bio (col-span-2, row-span-1) -->
+        <BentoGridItem class="md:col-span-2 md:row-span-1 bg-card/30 backdrop-blur-xl border border-border/60 rounded-3xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] hover:border-primary/40 group flex flex-col justify-between">
           <template #header>
-            <div class="flex flex-col justify-between h-full gap-6 w-full">
-              <div class="flex flex-col gap-4">
+            <div class="flex flex-col md:flex-row justify-between h-full gap-6 w-full items-center md:items-start">
+              <div class="flex flex-col gap-3 justify-center h-full max-w-xl">
                 <div class="flex items-center gap-2 text-xs font-semibold text-primary uppercase tracking-widest">
                   <Sparkles class="size-3.5" /> Profile & Bio
                 </div>
                 
-                <h4 class="text-2xl md:text-3xl font-extrabold text-foreground leading-snug">
+                <h4 class="text-xl md:text-2xl font-extrabold text-foreground leading-snug">
                   Halo, saya <span class="bg-linear-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Rafli Hendarsyah</span>.
                 </h4>
                 
-                <p class="text-muted-foreground text-sm md:text-base leading-relaxed max-w-xl">
+                <p class="text-muted-foreground text-xs md:text-sm leading-relaxed">
                   Mahasiswa dan developer yang sangat menyukai pembuatan produk digital interaktif. Saya fokus pada pengembangan frontend modern dengan estetika visual premium, animasi interaktif yang mulus, dan performa tinggi menggunakan ekosistem Vue, Tailwind CSS, dan TypeScript.
                 </p>
-              </div>
-
-              <!-- Tech stack tags / visual footer -->
-              <div class="flex flex-col md:flex-row gap-6 justify-between items-start md:items-end w-full">
-                <div class="flex flex-wrap gap-2 max-w-md">
-                  <span v-for="skill in ['Vue.js', 'Vite', 'Tailwind CSS', 'TypeScript', 'Motion-V', 'UI/UX Design', 'Git']" :key="skill" 
-                    class="px-3 py-1.5 text-xs font-medium rounded-xl border border-border/80 bg-muted/20 text-foreground/80 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300 cursor-default">
+                
+                <div class="flex flex-wrap gap-1.5 mt-1">
+                  <span v-for="skill in ['Vue.js', 'Vite', 'Tailwind CSS', 'TypeScript', 'Git']" :key="skill" 
+                    class="px-2 py-0.5 text-[10px] font-medium rounded-lg border border-border/80 bg-muted/20 text-foreground/80 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300 cursor-default">
                     {{ skill }}
                   </span>
                 </div>
-                
-                <!-- Photo inside glowing frame -->
-                <div class="relative w-28 h-28 md:w-32 md:h-32 shrink-0 rounded-2xl overflow-hidden border border-border bg-muted/10 shadow-lg group-hover:scale-[1.03] transition-transform duration-500 self-end">
-                  <img :src="photoUrl" class="w-full h-full object-cover" alt="Profile avatar" />
-                  <div class="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
-                  <div class="absolute bottom-2 left-2 right-2 text-white flex flex-col pointer-events-none">
-                    <span class="text-[10px] font-semibold tracking-wider uppercase opacity-90">IDN 🇮🇩</span>
-                  </div>
+              </div>
+              
+              <!-- Photo inside glowing frame -->
+              <div class="relative w-24 h-24 md:w-28 md:h-28 shrink-0 rounded-2xl overflow-hidden border border-border bg-muted/10 shadow-lg group-hover:scale-[1.03] transition-transform duration-500 self-center md:self-end">
+                <img :src="photoUrl" class="w-full h-full object-cover" alt="Profile avatar" />
+                <div class="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+                <div class="absolute bottom-1.5 left-2 right-2 text-white flex flex-col pointer-events-none">
+                  <span class="text-[9px] font-semibold tracking-wider uppercase opacity-90">IDN 🇮🇩</span>
                 </div>
               </div>
             </div>
           </template>
         </BentoGridItem>
-
+ 
         <!-- Box 2: Timezone Clock (col-span-1, row-span-1) -->
         <BentoGridItem class="md:col-span-1 md:row-span-1 bg-card/30 backdrop-blur-xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] hover:border-primary/40 group flex flex-col justify-between">
           <template #header>
@@ -283,19 +354,19 @@ onUnmounted(() => {
                   </circle>
                 </svg>
               </div>
-
+ 
               <div class="flex flex-col gap-2">
                 <div class="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
                   <MapPin class="size-3.5 text-primary" /> Location & Time
                 </div>
                 <p class="text-sm font-semibold text-foreground/90">Indonesia (WIB / GMT+7)</p>
               </div>
-
+ 
               <div class="flex flex-col my-4">
                 <span class="text-3xl font-extrabold text-foreground font-mono tracking-wider">{{ timeString || "00:00:00" }}</span>
                 <span class="text-xs text-muted-foreground mt-1">{{ dateString || "Today" }}</span>
               </div>
-
+ 
               <div>
                 <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium" 
                   :class="isAwake ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'">
@@ -306,63 +377,95 @@ onUnmounted(() => {
             </div>
           </template>
         </BentoGridItem>
-
-        <!-- Box 3: Spotify player (col-span-1, row-span-1) - Swapped & Compact -->
-        <BentoGridItem class="md:col-span-1 md:row-span-1 bg-card/30 backdrop-blur-xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] hover:border-primary/40 group flex flex-col justify-between">
+ 
+        <!-- Box 3: GitLab Contribution Calendar (col-span-3, row-span-1) -->
+        <BentoGridItem class="md:col-span-3 md:row-span-1 bg-card/30 backdrop-blur-xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(245,108,35,0.15)] hover:border-[#fc6d26]/40 group flex flex-col justify-between overflow-hidden">
           <template #header>
-            <div class="flex flex-col justify-between h-full w-full gap-2">
+            <div class="flex flex-col justify-between h-full w-full gap-4">
               <div class="flex items-center justify-between w-full">
                 <div class="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
-                  <Music class="size-3.5 text-primary animate-pulse" /> Spotify
+                  <!-- Custom GitLab SVG Logo -->
+                  <svg class="size-4 fill-current text-[#fc6d26] animate-pulse" viewBox="0 0 24 24">
+                    <path d="M23.955 13.587l-1.342-4.135L22.61 9.45c-.015-.044-.028-.088-.046-.13l-2.036-6.262c-.08-.248-.25-.456-.474-.582a1.077 1.077 0 0 0-1.12.035c-.212.152-.352.39-.387.653l-1.127 3.473H6.586L5.459 3.164a1.077 1.077 0 0 0-.387-.653 1.077 1.077 0 0 0-1.12-.035c-.224.126-.395.334-.474.582L1.442 9.32a.987.987 0 0 0-.045.13l-.004.004L.045 13.59a.959.959 0 0 0 .348 1.073l11.607 8.441 11.607-8.441a.959.959 0 0 0 .348-1.076z" />
+                  </svg>
+                  <span>GitLab Calendar</span>
                 </div>
-                <div class="flex items-center gap-1 px-1.5 py-0.5 text-[10px] text-primary font-medium bg-primary/10 border border-primary/20 rounded-full">
-                  <span class="size-1 rounded-full bg-primary" :class="isPlaying ? 'animate-ping' : ''"></span>
-                  Live
+                <a :href="gitlabProfile?.web_url || 'https://gitlab.com/' + gitlabUsername" target="_blank" class="text-muted-foreground hover:text-foreground transition-colors duration-200">
+                  <ExternalLink class="size-3.5" />
+                </a>
+              </div>
+ 
+              <!-- Loading state -->
+              <div v-if="isLoadingGitLab" class="flex flex-col items-center justify-center grow py-6">
+                <div class="size-6 border-2 border-primary/20 border-t-[#fc6d26] rounded-full animate-spin"></div>
+              </div>
+ 
+              <!-- GitLab Calendar Grid (Full-width 40 columns) -->
+              <div v-else class="my-1 w-full flex flex-col overflow-x-auto select-none pb-1 scrollbar-thin scrollbar-thumb-muted">
+                <!-- Month Row (Aligned to Grid Columns) -->
+                <div class="relative text-[9px] text-muted-foreground mb-1.5 h-3 min-w-[560px] ml-7">
+                  <div v-for="label in gitlabMonthLabels" :key="label.colIndex" 
+                       class="absolute font-sans leading-none"
+                       :style="{ left: `${(label.colIndex / 40) * 100}%` }">
+                    {{ label.name }}
+                  </div>
+                </div>
+ 
+                <div class="flex items-center min-w-[560px] h-[84px]">
+                  <!-- Weekday Labels (Pixel-perfect align) -->
+                  <div class="grid grid-rows-7 gap-0.5 md:gap-1 h-full text-[9px] text-muted-foreground pr-2 font-sans select-none shrink-0 w-7 py-0.5">
+                    <div class="flex items-center h-full"></div>
+                    <div class="flex items-center h-full">Mon</div>
+                    <div class="flex items-center h-full"></div>
+                    <div class="flex items-center h-full">Wed</div>
+                    <div class="flex items-center h-full"></div>
+                    <div class="flex items-center h-full">Fri</div>
+                    <div class="flex items-center h-full"></div>
+                  </div>
+ 
+                  <!-- Contributions Grid (40 Columns x 7 Rows = 280 cells) -->
+                  <div class="grid grid-rows-7 grid-flow-col gap-0.5 md:gap-1 h-full justify-between grow">
+                    <div v-for="(level, idx) in gitlabContributions" :key="idx" 
+                      class="size-2.5 rounded-xs transition-all duration-200 hover:scale-125 hover:shadow-[0_0_8px_currentColor]"
+                      :class="[
+                        level === 0 ? 'bg-[#ebedf0] dark:bg-[#161b22] border border-black/5 dark:border-white/5 text-transparent' : '',
+                        level === 1 ? 'bg-[#ffd8c5] dark:bg-[#2d1b15] text-[#2d1b15]' : '',
+                        level === 2 ? 'bg-[#ffb38a] dark:bg-[#4d2d22] text-[#4d2d22]' : '',
+                        level === 3 ? 'bg-[#ff7d44] dark:bg-[#7d412b] text-[#7d412b]' : '',
+                        level === 4 ? 'bg-[#fc6d26] dark:bg-[#e24329] text-[#e24329] shadow-[0_0_6px_rgba(252,109,38,0.3)]' : ''
+                      ]"
+                    ></div>
+                  </div>
+                </div>
+ 
+                <!-- Footer under graph: Learn link and Legend -->
+                <div class="flex items-center justify-between text-[9px] text-muted-foreground mt-3 pl-7 pr-0.5">
+                  <a href="https://docs.gitlab.com/ee/user/profile/index.html#view-contributions-on-your-profile-page" 
+                    target="_blank" class="hover:text-[#fc6d26] hover:underline transition-colors duration-200 font-sans">
+                    Learn how GitLab counts contributions
+                  </a>
+                  
+                  <div class="flex items-center gap-1 font-sans">
+                    <span>Less</span>
+                    <span class="size-2 rounded-xs bg-[#ebedf0] dark:bg-[#161b22] border border-black/5 dark:border-white/5"></span>
+                    <span class="size-2 rounded-xs bg-[#ffd8c5] dark:bg-[#2d1b15] border border-black/5 dark:border-white/5"></span>
+                    <span class="size-2 rounded-xs bg-[#ffb38a] dark:bg-[#4d2d22] border border-black/5 dark:border-white/5"></span>
+                    <span class="size-2 rounded-xs bg-[#ff7d44] dark:bg-[#7d412b] border border-black/5 dark:border-white/5"></span>
+                    <span class="size-2 rounded-xs bg-[#fc6d26] dark:bg-[#e24329] border border-black/5 dark:border-white/5"></span>
+                    <span>More</span>
+                  </div>
                 </div>
               </div>
-
-              <!-- Song Details & Vinyl -->
-              <div class="flex items-center gap-3 my-1 w-full">
-                <!-- Vinyl record overlay or lofi cover -->
-                <div class="relative size-12 shrink-0 rounded-xl bg-linear-to-tr from-pink-500 via-purple-600 to-indigo-600 shadow-md flex items-center justify-center overflow-hidden border border-white/10 group-hover:scale-105 transition-transform duration-300">
-                  <div class="absolute inset-0 bg-black/20" />
-                  <Music class="size-6 text-white/90" :class="isPlaying ? 'animate-spin' : ''" style="animation-duration: 8s" />
-                  <div class="absolute size-2 rounded-full bg-black/90 border border-white/20" />
+ 
+              <!-- Stats footer -->
+              <div class="flex items-center justify-between border-t border-border/30 pt-3 text-xs w-full">
+                <div class="flex flex-col">
+                  <span class="font-bold text-foreground font-mono">{{ gitlabTotalCommits }} Commits</span>
+                  <span class="text-[10px] text-muted-foreground">Past 10 months</span>
                 </div>
-
-                <div class="flex flex-col min-w-0">
-                  <span class="font-bold text-foreground text-xs truncate max-w-[140px]">Lofi Coding Session ☕</span>
-                  <span class="text-[10px] text-muted-foreground truncate">Chillhop Beats</span>
-                </div>
-              </div>
-
-              <!-- Compact Tracker & Audio Wave -->
-              <div class="flex flex-col gap-2 border-t border-border/30 pt-2 w-full">
-                <div class="flex items-center justify-between">
-                  <!-- Bouncing bars -->
-                  <div class="flex items-end gap-0.5 h-5 shrink-0 bg-muted/10 px-2 py-1 rounded-lg border border-border/10">
-                    <span v-for="i in 6" :key="i" 
-                      class="w-0.5 bg-primary/80 rounded-full transition-all duration-300"
-                      :class="isPlaying ? 'animate-bounce-bar' : 'h-1'"
-                      :style="isPlaying ? { 
-                        animationDelay: `${i * 0.08}s`, 
-                        animationDuration: `${0.5 + (i % 3) * 0.15}s` 
-                      } : {}"
-                    ></span>
-                  </div>
-                  <!-- Controls -->
-                  <div class="flex items-center gap-2">
-                    <button @click="togglePlayback" class="size-5 rounded-full bg-foreground text-background flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
-                      <Play v-if="!isPlaying" class="size-2.5 fill-current ml-0.5" />
-                      <Pause v-else class="size-2.5 fill-current" />
-                    </button>
-                  </div>
-                  <span class="text-[9px] text-muted-foreground font-mono">{{ formattedProgress }} / {{ formattedDuration }}</span>
-                </div>
-
-                <!-- Progress Line -->
-                <div class="relative w-full h-1 bg-muted rounded-full overflow-hidden cursor-pointer" @click="currentProgress = Math.floor(($event.offsetX / ($event.currentTarget as HTMLElement).clientWidth) * totalDuration)">
-                  <div class="absolute top-0 left-0 h-full bg-primary transition-all duration-100" :style="{ width: `${progressPercent}%` }" />
+                <div class="flex flex-col items-end">
+                  <span class="font-bold text-foreground font-mono">{{ gitlabMaxStreak }} Days</span>
+                  <span class="text-[10px] text-muted-foreground">Max streak</span>
                 </div>
               </div>
             </div>
@@ -389,22 +492,24 @@ onUnmounted(() => {
               <!-- Real calendar layout with month and weekday labels -->
               <div class="my-1 w-full flex flex-col overflow-x-auto select-none pb-1 scrollbar-thin scrollbar-thumb-muted">
                 <!-- Month Row (Aligned to Grid Columns) -->
-                <div class="grid grid-flow-col grid-cols-[repeat(40,minmax(0,1fr))] text-[9px] text-muted-foreground mb-1 pl-7 pr-0.5 leading-none h-3 min-w-[560px]">
-                  <div v-for="col in 40" :key="col" class="text-left font-sans">
-                    {{ getMonthLabel(col - 1) }}
+                <div class="relative text-[9px] text-muted-foreground mb-1.5 h-3 min-w-[560px] ml-7">
+                  <div v-for="label in githubMonthLabels" :key="label.colIndex" 
+                       class="absolute font-sans leading-none"
+                       :style="{ left: `${(label.colIndex / 40) * 100}%` }">
+                    {{ label.name }}
                   </div>
                 </div>
 
                 <div class="flex items-center min-w-[560px] h-[84px]">
-                  <!-- Weekday Labels -->
-                  <div class="grid grid-rows-7 h-full text-[9px] text-muted-foreground pr-2 font-sans select-none justify-between leading-[11px] shrink-0 w-7 py-0.5">
-                    <div></div>
-                    <div>Mon</div>
-                    <div></div>
-                    <div>Wed</div>
-                    <div></div>
-                    <div>Fri</div>
-                    <div></div>
+                  <!-- Weekday Labels (Pixel-perfect align) -->
+                  <div class="grid grid-rows-7 gap-0.5 md:gap-1 h-full text-[9px] text-muted-foreground pr-2 font-sans select-none shrink-0 w-7 py-0.5">
+                    <div class="flex items-center h-full"></div>
+                    <div class="flex items-center h-full">Mon</div>
+                    <div class="flex items-center h-full"></div>
+                    <div class="flex items-center h-full">Wed</div>
+                    <div class="flex items-center h-full"></div>
+                    <div class="flex items-center h-full">Fri</div>
+                    <div class="flex items-center h-full"></div>
                   </div>
 
                   <!-- Contributions Grid (40 Columns x 7 Rows = 280 cells) -->
@@ -412,7 +517,7 @@ onUnmounted(() => {
                     <div v-for="(level, idx) in githubContributions" :key="idx" 
                       class="size-2.5 rounded-xs transition-all duration-200 hover:scale-125 hover:shadow-[0_0_8px_currentColor]"
                       :class="[
-                        level === 0 ? 'bg-neutral-100 dark:bg-neutral-900 text-transparent' : '',
+                        level === 0 ? 'bg-[#ebedf0] dark:bg-[#161b22] border border-black/5 dark:border-white/5 text-transparent' : '',
                         level === 1 ? 'bg-[#9be9a8] dark:bg-[#0e4429] text-[#0e4429]' : '',
                         level === 2 ? 'bg-[#40c463] dark:bg-[#006d32] text-[#006d32]' : '',
                         level === 3 ? 'bg-[#30a14e] dark:bg-[#26a641] text-[#26a641]' : '',
@@ -431,11 +536,11 @@ onUnmounted(() => {
                   
                   <div class="flex items-center gap-1 font-sans">
                     <span>Less</span>
-                    <span class="size-2 rounded-xs bg-neutral-100 dark:bg-neutral-900 border border-black/5 dark:border-white/5"></span>
-                    <span class="size-2 rounded-xs bg-[#9be9a8] dark:bg-[#0e4429]"></span>
-                    <span class="size-2 rounded-xs bg-[#40c463] dark:bg-[#006d32]"></span>
-                    <span class="size-2 rounded-xs bg-[#30a14e] dark:bg-[#26a641]"></span>
-                    <span class="size-2 rounded-xs bg-[#216e39] dark:bg-[#39d353]"></span>
+                    <span class="size-2 rounded-xs bg-[#ebedf0] dark:bg-[#161b22] border border-black/5 dark:border-white/5"></span>
+                    <span class="size-2 rounded-xs bg-[#9be9a8] dark:bg-[#0e4429] border border-black/5 dark:border-white/5"></span>
+                    <span class="size-2 rounded-xs bg-[#40c463] dark:bg-[#006d32] border border-black/5 dark:border-white/5"></span>
+                    <span class="size-2 rounded-xs bg-[#30a14e] dark:bg-[#26a641] border border-black/5 dark:border-white/5"></span>
+                    <span class="size-2 rounded-xs bg-[#216e39] dark:bg-[#39d353] border border-black/5 dark:border-white/5"></span>
                     <span>More</span>
                   </div>
                 </div>
@@ -462,16 +567,4 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-@keyframes bounce-bar {
-  0%, 100% {
-    height: 6px;
-  }
-  50% {
-    height: 24px;
-  }
-}
-
-.animate-bounce-bar {
-  animation: bounce-bar 1s ease-in-out infinite;
-}
 </style>
