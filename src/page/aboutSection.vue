@@ -9,6 +9,7 @@ import {
   ExternalLink,
 } from "@lucide/vue";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
+import { fetchGitHubContributions, fetchGitHubContributionsDirect } from "@/service/timelineGithub";
 import photoUrl from "@/assets/photo.png";
 
 // Timezone Clock Logic (GMT+7)
@@ -52,19 +53,116 @@ const updateClock = () => {
   }
 };
 
-// GitHub mock contribution grid
+// GitHub live integrations
+const githubUsername = ref("Flidoang");
 const githubContributions = ref<number[]>([]);
+const totalCommits = ref(0);
+const maxStreak = ref(0);
+const isLiveGitHub = ref(false);
+const monthLabels = ref<{ name: string; colIndex: number }[]>([]);
+
+const getMonthLabel = (colIndex: number) => {
+  const match = monthLabels.value.find(m => m.colIndex === colIndex);
+  return match ? match.name : "";
+};
+
 const initGithubGrid = () => {
   const arr = [];
-  for (let i = 0; i < 280; i++) {
+  const today = new Date();
+  const mockDays = [];
+  
+  // Generate mock dates backwards for 280 days (40 weeks)
+  for (let i = 279; i >= 0; i--) {
+    const dateObj = new Date(today);
+    dateObj.setDate(today.getDate() - i);
+    const dateStr = dateObj.toISOString().split("T")[0];
+    
     const rand = Math.random();
-    if (rand < 0.45) arr.push(0);
-    else if (rand < 0.75) arr.push(1);
-    else if (rand < 0.88) arr.push(2);
-    else if (rand < 0.96) arr.push(3);
-    else arr.push(4);
+    let intensity = 0;
+    if (rand < 0.45) intensity = 0;
+    else if (rand < 0.75) intensity = 1;
+    else if (rand < 0.88) intensity = 2;
+    else if (rand < 0.96) intensity = 3;
+    else intensity = 4;
+    
+    arr.push(intensity);
+    mockDays.push({ date: dateStr, intensity });
   }
+  
   githubContributions.value = arr;
+  totalCommits.value = 430;
+  maxStreak.value = 15;
+  isLiveGitHub.value = false;
+  
+  // Generate month labels for mock data
+  const labels: { name: string; colIndex: number }[] = [];
+  let prevMonth = "";
+  const totalWeeks = 40;
+  for (let w = 0; w < totalWeeks; w++) {
+    const dayData = mockDays[w * 7];
+    const dateObj = new Date(dayData.date);
+    const monthName = dateObj.toLocaleString("id-ID", { month: "short" });
+    if (monthName !== prevMonth) {
+      labels.push({ name: monthName, colIndex: w });
+      prevMonth = monthName;
+    }
+  }
+  monthLabels.value = labels;
+};
+
+const loadGitHubData = async () => {
+  try {
+    const token = import.meta.env.VITE_GITHUB_TOKEN;
+    let data;
+    if (token) {
+      console.log("Fetching GitHub contributions directly from official GitHub GraphQL API...");
+      data = await fetchGitHubContributionsDirect(githubUsername.value, token);
+    } else {
+      console.log("Fetching GitHub contributions from public Deno proxy...");
+      data = await fetchGitHubContributions(githubUsername.value);
+    }
+    
+    // Total commits in past 12 months
+    totalCommits.value = data.total.lastYear || 0;
+    
+    // Map contributions to our grid cells (take the last 280 days = 40 weeks)
+    const last280 = data.contributions.slice(-280);
+    githubContributions.value = last280.map(day => day.intensity);
+    
+    // Calculate streaks
+    let current = 0;
+    let max = 0;
+    for (const day of data.contributions) {
+      if (day.count > 0) {
+        current += 1;
+        if (current > max) max = current;
+      } else {
+        current = 0;
+      }
+    }
+    maxStreak.value = max;
+    isLiveGitHub.value = true;
+
+    // Generate Month Labels aligned to columns
+    const labels: { name: string; colIndex: number }[] = [];
+    let prevMonth = "";
+    const totalWeeks = Math.floor(last280.length / 7);
+    for (let w = 0; w < totalWeeks; w++) {
+      const dayData = last280[w * 7];
+      if (dayData && dayData.date) {
+        const dateObj = new Date(dayData.date);
+        const monthName = dateObj.toLocaleString("id-ID", { month: "short" });
+        if (monthName !== prevMonth) {
+          labels.push({ name: monthName, colIndex: w });
+          prevMonth = monthName;
+        }
+      }
+    }
+    monthLabels.value = labels;
+  } catch (error) {
+    console.error("Failed to load live GitHub contributions, falling back to mock data:", error);
+    initGithubGrid();
+  }
 };
 
 // Spotify player reactive logic
@@ -90,7 +188,7 @@ let spotifyInterval: any = null;
 onMounted(() => {
   updateClock();
   clockInterval = setInterval(updateClock, 1000);
-  initGithubGrid();
+  loadGitHubData();
   
   spotifyInterval = setInterval(() => {
     if (isPlaying.value) {
@@ -283,38 +381,74 @@ onUnmounted(() => {
                   </svg>
                   <span>GitHub Activity Calendar</span>
                 </div>
-                <a href="https://github.com" target="_blank" class="text-muted-foreground hover:text-foreground transition-colors duration-200">
+                <a :href="'https://github.com/' + githubUsername" target="_blank" class="text-muted-foreground hover:text-foreground transition-colors duration-200">
                   <ExternalLink class="size-3.5" />
                 </a>
               </div>
 
-              <!-- Mock Graph - 280 blocks for wide screen -->
-              <div class="my-1 w-full">
-                <div class="grid grid-rows-7 grid-flow-col gap-0.5 md:gap-1 overflow-x-auto py-1 justify-between w-full select-none">
-                  <div v-for="(level, idx) in githubContributions" :key="idx" 
-                    class="size-2.5 rounded-xs transition-all duration-200 hover:scale-125 hover:shadow-[0_0_8px_currentColor]"
-                    :class="[
-                      level === 0 ? 'bg-muted/10 dark:bg-white/5 text-transparent' : '',
-                      level === 1 ? 'bg-emerald-950/40 dark:bg-emerald-900/30 text-emerald-900' : '',
-                      level === 2 ? 'bg-emerald-700/60 text-emerald-700' : '',
-                      level === 3 ? 'bg-emerald-500/80 text-emerald-500' : '',
-                      level === 4 ? 'bg-emerald-400 text-emerald-400 shadow-[0_0_4px_rgba(52,211,153,0.3)]' : ''
-                    ]"
-                  ></div>
+              <!-- Real calendar layout with month and weekday labels -->
+              <div class="my-1 w-full flex flex-col overflow-x-auto select-none pb-1 scrollbar-thin scrollbar-thumb-muted">
+                <!-- Month Row (Aligned to Grid Columns) -->
+                <div class="grid grid-flow-col grid-cols-[repeat(40,minmax(0,1fr))] text-[9px] text-muted-foreground mb-1 pl-7 pr-0.5 leading-none h-3 min-w-[560px]">
+                  <div v-for="col in 40" :key="col" class="text-left font-sans">
+                    {{ getMonthLabel(col - 1) }}
+                  </div>
                 </div>
-                <div class="flex items-center justify-between text-[10px] text-muted-foreground mt-2">
-                  <span>Showing mock contribution data for the past 12 months</span>
-                  <span>Less • • • • More</span>
+
+                <div class="flex items-center min-w-[560px] h-[84px]">
+                  <!-- Weekday Labels -->
+                  <div class="grid grid-rows-7 h-full text-[9px] text-muted-foreground pr-2 font-sans select-none justify-between leading-[11px] shrink-0 w-7 py-0.5">
+                    <div></div>
+                    <div>Mon</div>
+                    <div></div>
+                    <div>Wed</div>
+                    <div></div>
+                    <div>Fri</div>
+                    <div></div>
+                  </div>
+
+                  <!-- Contributions Grid (40 Columns x 7 Rows = 280 cells) -->
+                  <div class="grid grid-rows-7 grid-flow-col gap-0.5 md:gap-1 h-full justify-between grow">
+                    <div v-for="(level, idx) in githubContributions" :key="idx" 
+                      class="size-2.5 rounded-xs transition-all duration-200 hover:scale-125 hover:shadow-[0_0_8px_currentColor]"
+                      :class="[
+                        level === 0 ? 'bg-neutral-100 dark:bg-neutral-900 text-transparent' : '',
+                        level === 1 ? 'bg-[#9be9a8] dark:bg-[#0e4429] text-[#0e4429]' : '',
+                        level === 2 ? 'bg-[#40c463] dark:bg-[#006d32] text-[#006d32]' : '',
+                        level === 3 ? 'bg-[#30a14e] dark:bg-[#26a641] text-[#26a641]' : '',
+                        level === 4 ? 'bg-[#216e39] dark:bg-[#39d353] text-[#39d353] shadow-[0_0_6px_rgba(57,211,83,0.3)]' : ''
+                      ]"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- Footer under graph: Learn link and Legend -->
+                <div class="flex items-center justify-between text-[9px] text-muted-foreground mt-3 pl-7 pr-0.5">
+                  <a href="https://docs.github.com/en/github/setting-up-and-managing-your-github-profile/managing-contribution-graphs-on-your-profile/managing-contribution-graphs-on-your-profile" 
+                    target="_blank" class="hover:text-primary hover:underline transition-colors duration-200 font-sans">
+                    Learn how we count contributions
+                  </a>
+                  
+                  <div class="flex items-center gap-1 font-sans">
+                    <span>Less</span>
+                    <span class="size-2 rounded-xs bg-neutral-100 dark:bg-neutral-900 border border-black/5 dark:border-white/5"></span>
+                    <span class="size-2 rounded-xs bg-[#9be9a8] dark:bg-[#0e4429]"></span>
+                    <span class="size-2 rounded-xs bg-[#40c463] dark:bg-[#006d32]"></span>
+                    <span class="size-2 rounded-xs bg-[#30a14e] dark:bg-[#26a641]"></span>
+                    <span class="size-2 rounded-xs bg-[#216e39] dark:bg-[#39d353]"></span>
+                    <span>More</span>
+                  </div>
                 </div>
               </div>
 
+              <!-- Dynamic Commit Stats footer -->
               <div class="flex items-center justify-between border-t border-border/30 pt-3 text-xs w-full">
                 <div class="flex flex-col">
-                  <span class="font-bold text-foreground font-mono">430+ Commits</span>
+                  <span class="font-bold text-foreground font-mono">{{ totalCommits }} Commits</span>
                   <span class="text-[10px] text-muted-foreground">Past 12 months</span>
                 </div>
                 <div class="flex flex-col items-end">
-                  <span class="font-bold text-foreground font-mono">15 Days</span>
+                  <span class="font-bold text-foreground font-mono">{{ maxStreak }} Days</span>
                   <span class="text-[10px] text-muted-foreground">Max streak</span>
                 </div>
               </div>
