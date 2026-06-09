@@ -4,6 +4,8 @@ import ProfileCard from "@/components/about/ProfileCard.vue";
 import TimezoneCard from "@/components/about/TimezoneCard.vue";
 import GitLabCard from "@/components/about/GitLabCard.vue";
 import GitHubCard from "@/components/about/GitHubCard.vue";
+import { LineShadowText } from "@/components/ui/line-shadow-text";
+import BlurReveal from "@/components/ui/blur-reveal/BlurReveal.vue";
 </script>
 
 <template>
@@ -11,12 +13,18 @@ import GitHubCard from "@/components/about/GitHubCard.vue";
     <div class="w-full flex flex-col gap-12">
       <!-- Section Title -->
       <div class="text-center max-w-2xl mx-auto flex flex-col items-center">
-        <h3 class="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Bento Grid Showcase
-        </h3>
-        <p class="mt-4 text-muted-foreground text-base sm:text-lg">
-          Kenali saya lebih dekat lewat kompilasi cuplikan aktivitas, hobi, dan rutinitas harian saya yang disajikan dalam Bento Grid layout.
-        </p>
+        <BlurReveal :delay="0" :duration="0.7">
+          <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-x-2 gap-y-1 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
+            <LineShadowText shadow-color="#E5BEEC" class="whitespace-nowrap">Behind the Code</LineShadowText>
+            <LineShadowText shadow-color="#E5BEEC" class="whitespace-nowrap">& Contributions</LineShadowText>
+          </div>
+        </BlurReveal>
+        
+        <BlurReveal :delay="0.2" :duration="0.7">
+          <p class="mt-4 text-[#917FB3] text-base sm:text-lg">
+            Jelajahi profil ringkas saya, zona waktu lokal, serta visualisasi kontribusi kode harian di GitHub dan GitLab secara real-time.
+          </p>
+        </BlurReveal>
       </div>
 
       <!-- Bento Grid Container -->

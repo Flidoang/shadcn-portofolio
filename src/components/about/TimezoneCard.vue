@@ -177,7 +177,7 @@ const currentActivity = computed(() => {
             <component :is="currentActivity.icon" class="size-4 text-[#E5BEEC] shrink-0 mt-0.5" />
             <div class="flex flex-col min-w-0">
               <span class="text-[10px] font-bold text-[#FDE2F3] leading-none">{{ currentActivity.title }}</span>
-              <span class="text-[9px] text-[#917FB3] leading-normal mt-1.5 select-text">{{ currentActivity.desc }}</span>
+              <span class="text-[9px] text-[#FDE2F3]/80 leading-normal mt-1.5 select-text">{{ currentActivity.desc }}</span>
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@ import CardSpotlight from "@/components/ui/card-spotlight/CardSpotlight.vue";
 import SparklesText from "@/components/ui/sparkles-text/SparklesText.vue";
 import FlipWords from "@/components/ui/flip-words/FlipWords.vue";
 import ShimmerButton from "@/components/ui/shimmer-button/ShimmerButton.vue";
-import photoUrl from "@/assets/photo.png";
+import photoUrl from "@/assets/me.jpeg";
 </script>
 
 <template>
@@ -31,10 +31,10 @@ import photoUrl from "@/assets/photo.png";
         </h4>
         
         <p class="text-muted-foreground text-xs md:text-sm leading-relaxed">
-          Hai! Saya seorang mahasiswa sekaligus fullstack developer yang hobi membangun aplikasi web (end-to-end). 
+          Hai! Saya seorang fresh graduate dari jurusan Teknik Informatika dan seorang Fullstack Developer yang memiliki hobi membangun aplikasi web (end-to-end). 
           Fokus utama saya saat ini adalah membangun sistem backend yang andal dan antarmuka frontend yang 
           <FlipWords :words="['skalabel', 'aman', 'interaktif', 'modern']" class="text-[#E5BEEC] font-semibold" /> 
-          menggunakan ekosistem Node.js, Vue.js, PostgreSQL, dan TypeScript.
+          dengan menggunakan ekosistem Node.js, Vue.js, PostgreSQL, dan TypeScript.
         </p>
         
         <div class="flex flex-wrap gap-1.5 mt-2">
