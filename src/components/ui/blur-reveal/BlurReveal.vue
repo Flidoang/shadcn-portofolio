@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<Props>(), {
 const slots = useSlots();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const children = ref<any>([]);
+const children = ref<any[]>([]);
 
 onMounted(() => {
   // This will reactively capture all content provided in the default slot
