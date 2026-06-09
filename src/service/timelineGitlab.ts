@@ -24,8 +24,8 @@ export interface GitLabContributionsResponse {
  */
 async function fetchWithCorsProxy(targetUrl: string): Promise<any> {
   const proxies = [
-    `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`
+    // `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+    `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(targetUrl)}`
   ];
 
   let lastError: any = null;
@@ -65,12 +65,12 @@ async function fetchProfile(username: string, token?: string): Promise<GitLabPro
   if (token && token.trim() !== "" && !token.includes("IsiTokenGitLabAndaDisini")) {
     searchUrl += `&private_token=${token}`;
   }
-  
+
   const users = await fetchWithCorsProxy(searchUrl);
   if (!Array.isArray(users) || users.length === 0) {
     throw new Error(`GitLab user "${username}" not found`);
   }
-  
+
   const user = users[0];
   return {
     id: user.id,
@@ -100,7 +100,7 @@ export async function fetchGitLabContributions(username: string, token?: string)
 
     const pagePromises = [];
     const maxPages = 4; // Fetch up to 400 events in parallel to fill the 300-day calendar window
-    
+
     for (let page = 1; page <= maxPages; page++) {
       let eventsUrl = `https://gitlab.com/api/v4/users/${profile.id}/events?per_page=100&page=${page}&after=${afterDateStr}`;
       if (cleanToken) {
@@ -114,7 +114,7 @@ export async function fetchGitLabContributions(username: string, token?: string)
 
     const pagesResults = await Promise.all(pagePromises);
     const events = pagesResults.flat();
-    
+
     // Parse the date mappings from events (e.g. {"2026-06-08": 5})
     const calendarData: { [date: string]: number } = {};
     let totalCommits = 0;
@@ -124,8 +124,8 @@ export async function fetchGitLabContributions(username: string, token?: string)
         if (event && event.created_at) {
           const dateStr = event.created_at.split("T")[0];
           // Count commits if pushed, otherwise count as 1 contribution event
-          const count = (event.push_data && event.push_data.commit_count) 
-            ? event.push_data.commit_count 
+          const count = (event.push_data && event.push_data.commit_count)
+            ? event.push_data.commit_count
             : 1;
           calendarData[dateStr] = (calendarData[dateStr] || 0) + count;
           totalCommits += count;
@@ -135,7 +135,7 @@ export async function fetchGitLabContributions(username: string, token?: string)
 
     const contributions: GitLabContributionDay[] = [];
     const today = new Date();
-    
+
     let maxStreak = 0;
     let currentStreak = 0;
 
@@ -199,7 +199,7 @@ function getMockGitLabCalendar(username: string, preFetchedProfile?: GitLabProfi
 
   const contributions: GitLabContributionDay[] = [];
   const today = new Date();
-  
+
   let totalCommits = 0;
   let currentStreak = 0;
   let maxStreak = 0;
