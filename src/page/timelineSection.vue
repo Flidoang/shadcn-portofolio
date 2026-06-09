@@ -38,14 +38,14 @@ const timelineItems = [
               <div
                 class="p-2 rounded-lg transition-colors duration-500"
                 :class="isActive 
-                  ? 'bg-purple-500/20 text-purple-600 dark:text-purple-400' 
-                  : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'"
+                  ? 'bg-[#E5BEEC]/20 text-[#917FB3] dark:text-[#E5BEEC] drop-shadow-[0_0_8px_rgba(229,190,236,0.3)]' 
+                  : 'bg-neutral-200 dark:bg-[#2A2F4F] text-neutral-500 dark:text-[#917FB3]/60'"
               >
                 <Briefcase class="w-5 h-5" />
               </div>
               <div>
                 <h4 class="text-lg md:text-xl font-bold text-foreground">Senior Frontend Engineer</h4>
-                <p class="text-xs md:text-sm font-semibold text-purple-600 dark:text-purple-400">TechCorp</p>
+                <p class="text-xs md:text-sm font-semibold text-[#917FB3] dark:text-[#E5BEEC]">TechCorp</p>
               </div>
             </div>
             
@@ -54,10 +54,10 @@ const timelineItems = [
             </p>
 
             <div class="flex flex-wrap gap-2 pt-1">
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">Vue 3</span>
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">TypeScript</span>
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">Pinia</span>
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">SaaS Architecture</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">Vue 3</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">TypeScript</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">Pinia</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">SaaS Architecture</span>
             </div>
           </div>
         </TimelineCard>
@@ -71,14 +71,14 @@ const timelineItems = [
               <div
                 class="p-2 rounded-lg transition-colors duration-500"
                 :class="isActive 
-                  ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400' 
-                  : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'"
+                  ? 'bg-[#E5BEEC]/20 text-[#917FB3] dark:text-[#E5BEEC] drop-shadow-[0_0_8px_rgba(229,190,236,0.3)]' 
+                  : 'bg-neutral-200 dark:bg-[#2A2F4F] text-neutral-500 dark:text-[#917FB3]/60'"
               >
                 <Briefcase class="w-5 h-5" />
               </div>
               <div>
                 <h4 class="text-lg md:text-xl font-bold text-foreground">Frontend Developer & UI/UX Designer</h4>
-                <p class="text-xs md:text-sm font-semibold text-blue-600 dark:text-blue-400">Creative Studio</p>
+                <p class="text-xs md:text-sm font-semibold text-[#917FB3] dark:text-[#E5BEEC]">Creative Studio</p>
               </div>
             </div>
             
@@ -87,10 +87,10 @@ const timelineItems = [
             </p>
 
             <div class="flex flex-wrap gap-2 pt-1">
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">Figma</span>
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">Vue 3</span>
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">GSAP Animations</span>
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">UI/UX Design</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">Figma</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">Vue 3</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">GSAP Animations</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">UI/UX Design</span>
             </div>
           </div>
         </TimelineCard>
@@ -104,14 +104,14 @@ const timelineItems = [
               <div
                 class="p-2 rounded-lg transition-colors duration-500"
                 :class="isActive 
-                  ? 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-400' 
-                  : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'"
+                  ? 'bg-[#E5BEEC]/20 text-[#917FB3] dark:text-[#E5BEEC] drop-shadow-[0_0_8px_rgba(229,190,236,0.3)]' 
+                  : 'bg-neutral-200 dark:bg-[#2A2F4F] text-neutral-500 dark:text-[#917FB3]/60'"
               >
                 <GraduationCap class="w-5 h-5" />
               </div>
               <div>
                 <h4 class="text-lg md:text-xl font-bold text-foreground">Bachelor of Computer Science</h4>
-                <p class="text-xs md:text-sm font-semibold text-indigo-600 dark:text-indigo-400">University of Technology</p>
+                <p class="text-xs md:text-sm font-semibold text-[#917FB3] dark:text-[#E5BEEC]">University of Technology</p>
               </div>
             </div>
             
@@ -120,10 +120,10 @@ const timelineItems = [
             </p>
 
             <div class="flex flex-wrap gap-2 pt-1">
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">Algorithms</span>
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">Software Engineering</span>
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">HCI</span>
-              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-neutral-800/80 border border-neutral-300/50 dark:border-neutral-700/50 text-neutral-700 dark:text-neutral-300">Web Accessibility</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">Algorithms</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">Software Engineering</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">HCI</span>
+              <span class="px-2 py-0.5 text-[10px] md:text-xs rounded-full bg-neutral-200/80 dark:bg-[#2A2F4F] border border-neutral-300/50 dark:border-[#917FB3]/30 text-neutral-700 dark:text-neutral-300">Web Accessibility</span>
             </div>
           </div>
         </TimelineCard>

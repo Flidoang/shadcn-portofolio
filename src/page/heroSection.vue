@@ -7,7 +7,7 @@ import FlipWords from "@/components/ui/flip-words/FlipWords.vue";
 import ShimmerButton from "@/components/ui/shimmer-button/ShimmerButton.vue";
 import SparklesText from "@/components/ui/sparkles-text/SparklesText.vue";
 import CardSpotlight from "@/components/ui/card-spotlight/CardSpotlight.vue";
-import photoUrl from "@/assets/photo.png";
+import photoUrl from "@/assets/me.jpeg";
 
 const activeTab = ref("workspace");
 
@@ -126,11 +126,11 @@ const isSmallScreen = computed(() => {
             <div class="h-28 font-mono text-[11px] overflow-hidden flex flex-col justify-center">
               <Transition name="fade" mode="out-in">
                 <div v-if="activeTab === 'workspace'" class="text-foreground/90 whitespace-pre-wrap leading-relaxed">
-<span class="text-[#917FB3] font-semibold">&lt;template&gt;</span>
-  <span class="text-[#917FB3] font-semibold">&lt;div</span> <span class="text-[#E5BEEC]">class</span>=<span class="text-emerald-400">"dev-lab"</span><span class="text-[#917FB3]">&gt;</span>
-    <span class="text-foreground/80 font-sans">    Building clean & responsive web interface.</span>
-    <span class="text-foreground/80 font-sans">    Delivering premium interactive layouts.</span>
-  <span class="text-[#917FB3] font-semibold">&lt;/div&gt;</span>
+<span class="text-[#917FB3] font-semibold">&lt;template&gt;</span><br/>
+  <span class="text-[#917FB3] font-semibold pl-6">&lt;div</span> <span class="text-[#E5BEEC]">class</span>=<span class="text-emerald-400">"dev-lab"</span><span class="text-[#917FB3]">&gt;</span><br/>
+    <span class="text-[#917FB3] font-semibold pl-12">&lt;p&gt;<span class="text-foreground/80 font-sans">  Building clean & responsive web interface.</span></span><br/>
+    <span class="text-foreground/80 font-sans pl-12">Delivering premium interactive layouts. <span class="text-[#917FB3] font-semibold">&lt;/p&gt;</span></span><br/>
+  <span class="text-[#917FB3] font-semibold pl-6">&lt;/div&gt;</span><br/>
 <span class="text-[#917FB3] font-semibold">&lt;/template&gt;</span></div>
                 <div v-else class="flex flex-col gap-2.5 justify-center h-full">
                   <div v-for="focus in [
@@ -203,6 +203,7 @@ const isSmallScreen = computed(() => {
               gradient-color="rgba(229, 190, 236, 0.15)"
               :gradient-size="200"
               :gradient-opacity="0.8"
+              slot-class="w-full h-full"
               class="relative w-56 h-56 sm:w-64 sm:h-64 rounded-3xl overflow-hidden border border-[#917FB3]/40 bg-[#2A2F4F]/30 backdrop-blur-xl shadow-2xl cursor-pointer group hover:border-[#E5BEEC]/60 hover:shadow-[0_0_40px_rgba(229,190,236,0.3)] transition-all duration-500"
             >
               <img
