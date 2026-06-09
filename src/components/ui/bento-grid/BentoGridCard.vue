@@ -32,16 +32,16 @@ const props = defineProps<Props>();
       <component
         :is="icon"
         v-if="icon"
-        class="size-12 origin-left transform-gpu text-neutral-700 transition-all duration-300 ease-in-out group-hover:scale-75"
+        class="size-12 origin-left transform-gpu text-[#735F32] transition-all duration-300 ease-in-out group-hover:scale-75"
       />
       <div
         v-else
-        class="size-12 origin-left transform-gpu text-neutral-700 transition-all duration-300 ease-in-out group-hover:scale-75"
+        class="size-12 origin-left transform-gpu text-[#735F32] transition-all duration-300 ease-in-out group-hover:scale-75"
       />
-      <h3 class="text-xl font-semibold text-neutral-700 dark:text-neutral-300">
+      <h3 class="text-xl font-semibold text-foreground">
         {{ name }}
       </h3>
-      <p class="max-w-lg text-neutral-400">{{ description }}</p>
+      <p class="max-w-lg text-muted-foreground">{{ description }}</p>
     </div>
 
     <div
@@ -49,13 +49,13 @@ const props = defineProps<Props>();
     >
       <a
         :href="href"
-        class="pointer-events-auto inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+        class="pointer-events-auto inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium text-[#C69749] transition-colors hover:bg-[#735F32]/20"
       >
         {{ cta }} →
       </a>
     </div>
     <div
-      class="pointer-events-none absolute inset-0 transform-gpu transition-all duration-300 group-hover:bg-black/3 group-hover:dark:bg-neutral-800/10"
+      class="pointer-events-none absolute inset-0 transform-gpu transition-all duration-300 group-hover:bg-[#735F32]/5 group-hover:dark:bg-[#735F32]/10"
     />
   </div>
 </template>

@@ -53,7 +53,7 @@ const backgroundStyle = computed(() => {
   <div
     :class="
       cn(
-        `group relative flex size-full overflow-hidden rounded-xl border bg-neutral-100 text-black dark:bg-neutral-900 dark:text-white`,
+        `group relative flex size-full overflow-hidden rounded-xl border text-black dark:text-white`,
         $props.class,
       )
     "

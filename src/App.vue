@@ -28,8 +28,6 @@ import timelineSection from "./page/timelineSection.vue";
     
     <!-- 5. Experience Timeline Section -->
     <timelineSection />
-
-
     
   </bgComponent>
 
