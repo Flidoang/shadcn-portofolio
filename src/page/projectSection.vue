@@ -8,53 +8,9 @@ import SafariMockup from "@/components/ui/safari-mockup/SafariMockup.vue";
 import BlurReveal from "@/components/ui/blur-reveal/BlurReveal.vue";
 import TextGlitch from "@/components/ui/text-glitch/TextGlitch.vue";
 
-// Project assets
-import p1_1 from "@/assets/project1_1.png";
-import p1_2 from "@/assets/project1_2.png";
-import p2_1 from "@/assets/project2_1.png";
-import p2_2 from "@/assets/project2_2.png";
-import p3_1 from "@/assets/project3_1.png";
-import p3_2 from "@/assets/project3_2.png";
+import { type Project, projects as projectData } from "@/lib/projectData";
 
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  extendedDescription: string;
-  url: string;
-  tags: string[];
-  screenshots: string[];
-}
-
-const projects = ref<Project[]>([
-  {
-    id: 1,
-    title: "Zenith Analytics",
-    description: "SaaS dashboard with real-time financial tracking and modern glassmorphism charts.",
-    extendedDescription: "Zenith Analytics is an enterprise-grade SaaS intelligence dashboard built to visualize complex business datasets in real-time. It features custom-built charts with smooth CSS animations, dark-mode styling with glowing borders, and collaborative workspace widgets. Implemented with Vue 3, Pinia, and ECharts.",
-    url: "zenith.io/dashboard",
-    tags: ["Vue 3", "Tailwind CSS", "ECharts", "TypeScript", "SaaS"],
-    screenshots: [p1_1, p1_2],
-  },
-  {
-    id: 2,
-    title: "Nova E-Commerce",
-    description: "Minimalist fashion store UI with responsive cart systems and smooth flow.",
-    extendedDescription: "Nova is a head-turning headless e-commerce frontend designed for premium lifestyle brands. Incorporating editorial aesthetics, smooth custom page transitions, state-managed shopping cart logic, and modular product catalog widgets. It is optimized for sub-second page loads and mobile conversions.",
-    url: "nova-store.design",
-    tags: ["Vue 3", "Vite", "Tailwind CSS", "State Management", "Stripe"],
-    screenshots: [p2_1, p2_2],
-  },
-  {
-    id: 3,
-    title: "Chrono Task Space",
-    description: "Agile management tool with collaborative Kanban boards and calendars.",
-    extendedDescription: "Chrono is a highly interactive workspace app for modern agile squads. It features a custom drag-and-drop Kanban board, a team schedule calendar, and gantt chart timelines. It leverages WebSockets for instantaneous real-time updates across multiple team members.",
-    url: "chrono-workspace.net",
-    tags: ["Vue 3", "WebSockets", "Tailwind CSS", "Kanban", "Collaboration"],
-    screenshots: [p3_1, p3_2],
-  },
-]);
+const projects = ref<Project[]>(projectData);
 
 const selectedProject = ref<Project | null>(null);
 const isModalOpen = ref(false);
@@ -264,7 +220,7 @@ onUnmounted(() => {
                     >
                       <img 
                         :src="img" 
-                        class="w-full h-full object-cover select-none pointer-events-none" 
+                        class="w-full h-full object-contain select-none pointer-events-none" 
                         alt="Project screenshot"
                       />
                     </div>

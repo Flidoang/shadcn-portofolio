@@ -112,7 +112,7 @@ onMounted(() => {
             <svg class="size-4 fill-current text-[#fc6d26] animate-pulse" viewBox="0 0 24 24">
               <path d="M23.955 13.587l-1.342-4.135L22.61 9.45c-.015-.044-.028-.088-.046-.13l-2.036-6.262c-.08-.248-.25-.456-.474-.582a1.077 1.077 0 0 0-1.12.035c-.212.152-.352.39-.387.653l-1.127 3.473H6.586L5.459 3.164a1.077 1.077 0 0 0-.387-.653 1.077 1.077 0 0 0-1.12-.035c-.224.126-.395.334-.474.582L1.442 9.32a.987.987 0 0 0-.045.13l-.004.004L.045 13.59a.959.959 0 0 0 .348 1.073l11.607 8.441 11.607-8.441a.959.959 0 0 0 .348-1.076z" />
             </svg>
-            <span>GitLab Calendar</span>
+            <span>GitLab Calendar • @{{ gitlabUsername }}</span>
           </div>
           <a :href="gitlabProfile?.web_url || 'https://gitlab.com/' + gitlabUsername" target="_blank" class="text-muted-foreground hover:text-foreground transition-colors duration-200">
             <ExternalLink class="size-3.5" />

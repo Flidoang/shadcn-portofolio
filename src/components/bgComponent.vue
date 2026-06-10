@@ -8,7 +8,7 @@ const isDark = computed(() => useColorMode().value === "dark");
 
 <template>
   <div
-    class="bg-background relative flex min-h-screen w-full flex-col items-center justify-center"
+    class="bg-background relative flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden"
   >
     <ParticlesBg
       :key="isDark.toString()"
