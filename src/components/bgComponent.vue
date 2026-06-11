@@ -3,7 +3,8 @@ import { useColorMode } from "@vueuse/core";
 import { computed } from "vue";
 import { ParticlesBg } from "@/components/ui/particles-bg";
 
-const isDark = computed(() => useColorMode().value === "dark");
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === "dark");
 </script>
 
 <template>

@@ -23,37 +23,31 @@ export interface GitLabContributionsResponse {
  * Robust fetch helper that attempts multiple CORS proxies sequentially.
  */
 async function fetchWithCorsProxy(targetUrl: string): Promise<any> {
-  const proxies = [
-    // `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-    `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(targetUrl)}`
-  ];
-
-  let lastError: any = null;
-  for (const proxyUrl of proxies) {
-    try {
-      console.log(`Attempting fetch via proxy: ${proxyUrl}`);
-      const res = await fetch(proxyUrl);
-      if (res.ok) {
-        return await res.json();
-      }
-      console.warn(`Proxy returned status ${res.status}: ${proxyUrl}`);
-    } catch (err) {
-      lastError = err;
-      console.warn(`Proxy failed to fetch: ${proxyUrl}`, err);
-    }
-  }
-
-  // Final fallback directly to the source (might encounter CORS but acts as final effort)
+  // 1. Attempt direct fetch first. GitLab API usually supports CORS.
   try {
     const directRes = await fetch(targetUrl);
     if (directRes.ok) {
       return await directRes.json();
     }
   } catch (err) {
-    lastError = err;
+    console.warn(`Direct fetch failed for ${targetUrl}, falling back to proxy`, err);
   }
 
-  throw lastError || new Error("All CORS proxies failed to fetch target resource");
+  // 2. Fallback to proxy
+  const proxyUrl = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(targetUrl)}`;
+  try {
+    console.log(`Attempting fetch via proxy: ${proxyUrl}`);
+    const res = await fetch(proxyUrl);
+    if (res.ok) {
+      return await res.json();
+    }
+    console.warn(`Proxy returned status ${res.status}: ${proxyUrl}`);
+  } catch (err) {
+    console.warn(`Proxy failed to fetch: ${proxyUrl}`, err);
+    throw err;
+  }
+
+  throw new Error("Failed to fetch target resource both directly and via proxy.");
 }
 
 /**
