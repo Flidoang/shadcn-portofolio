@@ -13,7 +13,7 @@ const isDark = computed(() => colorMode.value === "dark");
   >
     <ParticlesBg
       :key="isDark.toString()"
-      class="absolute inset-0"
+      class="fixed inset-0 z-0 pointer-events-none"
       :quantity="100"
       :ease="100"
       :color="isDark ? '#FFF' : '#000'"

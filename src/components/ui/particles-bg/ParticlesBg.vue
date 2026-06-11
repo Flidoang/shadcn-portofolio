@@ -37,7 +37,7 @@ const context = ref<CanvasRenderingContext2D | null>(null);
 const circles = ref<Circle[]>([]);
 const mouse = reactive<{ x: number; y: number }>({ x: 0, y: 0 });
 const canvasSize = reactive<{ w: number; h: number }>({ w: 0, h: 0 });
-const { x: mouseX, y: mouseY } = useMouse();
+const { x: mouseX, y: mouseY } = useMouse({ type: 'client' });
 const { pixelRatio } = useDevicePixelRatio();
 
 const color = computed(() => {

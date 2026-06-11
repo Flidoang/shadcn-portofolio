@@ -7,6 +7,8 @@ import aboutSection from "./page/aboutSection.vue";
 import toolsSection from "./page/toolsSection.vue";
 import projectSection from "./page/projectSection.vue";
 import timelineSection from "./page/timelineSection.vue";
+import contactSection from "./page/contactSection.vue";
+import footerComponent from "./components/footerComponent.vue";
 </script>
 
 <template>
@@ -29,6 +31,11 @@ import timelineSection from "./page/timelineSection.vue";
     <!-- 5. Experience Timeline Section -->
     <timelineSection />
     
+    <!-- 6. Contact Section -->
+    <contactSection />
+
+    <!-- 7. Footer -->
+    <footerComponent />
   </bgComponent>
 
   <!-- Cursor Efek -->
