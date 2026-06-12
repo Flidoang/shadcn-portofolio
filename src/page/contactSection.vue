@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Mail, Send, CheckCircle2, Loader2 } from "@lucide/vue";
+import { Send, CheckCircle2, Loader2 } from "@lucide/vue";
 import SparklesText from "@/components/ui/sparkles-text/SparklesText.vue";
 import CardSpotlight from "@/components/ui/card-spotlight/CardSpotlight.vue";
 import ShimmerButton from "@/components/ui/shimmer-button/ShimmerButton.vue";
