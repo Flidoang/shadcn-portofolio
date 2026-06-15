@@ -25,7 +25,7 @@ const cards = Object.values(svgModules).map((url) => ({
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col items-center justify-center p-4 py-24 gap-12">
+  <div id="tools" class="flex min-h-screen flex-col items-center justify-center p-4 py-24 gap-12">
     <!-- Header Section -->
     <div class="text-center max-w-2xl z-10 flex flex-col items-center">
       <BlurReveal :delay="0.1" :duration="0.8">
