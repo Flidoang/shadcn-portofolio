@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from '@lucide/vue'
+import { 
+  User, Wrench, Briefcase, 
+  FolderGit2, Mail 
+} from "@lucide/vue";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -7,178 +10,183 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
 
-import { default as ListItem } from './ui/navigation-menu/NavigationMenuItem.vue'
 import { LiquidGlass } from "@/components/ui/liquid-glass";
+import GithubIcon from '@/assets/menu/github.svg';
+import GitlabIcon from '@/assets/menu/gitlab.svg';
+import LinkedinIcon from '@/assets/menu/linkedin.svg';
+import InstagramIcon from '@/assets/menu/instagram.svg';
 
-const components: { title: string, href: string, description: string }[] = [
-  {
-    title: 'Alert Dialog',
-    href: '/docs/primitives/alert-dialog',
-    description:
-      'A modal dialog that interrupts the user with important content and expects a response.',
-  },
-  {
-    title: 'Hover Card',
-    href: '/docs/primitives/hover-card',
-    description:
-      'For sighted users to preview content available behind a link.',
-  },
-  {
-    title: 'Progress',
-    href: '/docs/primitives/progress',
-    description:
-      'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
-  },
-  {
-    title: 'Scroll-area',
-    href: '/docs/primitives/scroll-area',
-    description: 'Visually or semantically separates content.',
-  },
-  {
-    title: 'Tabs',
-    href: '/docs/primitives/tabs',
-    description:
-      'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
-  },
-  {
-    title: 'Tooltip',
-    href: '/docs/primitives/tooltip',
-    description:
-      'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
-  },
-]
+const scrollToSection = (id: string) => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+
 </script>
 
 <template>
   <LiquidGlass class="p-2 flex items-center justify-center">
     <NavigationMenu :viewport="false">
       <NavigationMenuList>
+        <!-- PROFILE MENU -->
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Home</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Profile</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul class="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
               <li class="row-span-3">
                 <NavigationMenuLink as-child>
                   <a
-                    class="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md"
-                    href="/"
+                    class="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md cursor-pointer"
+                    @click.prevent="scrollToSection('about')"
                   >
-                    <div class="mt-4 mb-2 text-lg font-medium">
-                      shadcn/ui
+                    <div class="mt-4 mb-2 text-lg font-medium flex items-center gap-2">
+                      <User class="w-5 h-5" /> About Me
                     </div>
                     <p class="text-muted-foreground text-sm leading-tight">
-                      Beautifully designed components built with Tailwind CSS.
+                      Mengenal lebih dekat siapa saya, perjalanan karir, dan passion saya dalam pengembangan web.
                     </p>
                   </a>
                 </NavigationMenuLink>
               </li>
-              <ListItem to="/docs" title="Introduction">
-                Re-usable components built using Radix UI and Tailwind CSS.
-              </ListItem>
-              <ListItem to="/docs/installation" title="Installation">
-                How to install dependencies and structure your app.
-              </ListItem>
-              <ListItem to="/docs/primitives/typography" title="Typography">
-                Styles for headings, paragraphs, lists...etc
-              </ListItem>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul class="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              <ListItem
-                v-for="component in components"
-                :key="component.title"
-                :title="component.title"
-                :to="component.href"
-              >
-                {{ component.description }}
-              </ListItem>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink as-child :class="navigationMenuTriggerStyle()">
-            <a href="/docs">Docs</a>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>List</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul class="grid w-[300px] gap-4">
               <li>
                 <NavigationMenuLink as-child>
-                  <a href="#">
-                    <div class="font-medium">Components</div>
-                    <div class="text-muted-foreground">
-                      Browse all components in the library.
+                  <a
+                    class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                    @click.prevent="scrollToSection('tools')"
+                  >
+                    <div class="text-sm font-medium leading-none flex items-center gap-2">
+                      <Wrench class="w-4 h-4" /> Tools & Tech
                     </div>
+                    <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                      Teknologi yang biasa saya gunakan.
+                    </p>
                   </a>
                 </NavigationMenuLink>
+              </li>
+              <li>
                 <NavigationMenuLink as-child>
-                  <a href="#">
-                    <div class="font-medium">Documentation</div>
-                    <div class="text-muted-foreground">
-                      Learn how to use the library.
+                  <a
+                    class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                    @click.prevent="scrollToSection('experience')"
+                  >
+                    <div class="text-sm font-medium leading-none flex items-center gap-2">
+                      <Briefcase class="w-4 h-4" /> Experience
                     </div>
-                  </a>
-                </NavigationMenuLink>
-                <NavigationMenuLink as-child>
-                  <a href="#">
-                    <div class="font-medium">Blog</div>
-                    <div class="text-muted-foreground">
-                      Read our latest blog posts.
-                    </div>
+                    <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                      Perjalanan edukasi dan pengalaman saya.
+                    </p>
                   </a>
                 </NavigationMenuLink>
               </li>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
+
+        <!-- WORKS MENU -->
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Simple</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Works</NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul class="grid w-[200px] gap-4">
+            <ul class="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+              <li class="row-span-3">
+                <NavigationMenuLink as-child>
+                  <a
+                    class="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md cursor-pointer"
+                    @click.prevent="scrollToSection('projects')"
+                  >
+                    <div class="mt-4 mb-2 text-lg font-medium flex items-center gap-2">
+                      <FolderGit2 class="w-5 h-5" /> Projects
+                    </div>
+                    <p class="text-muted-foreground text-sm leading-tight">
+                      Lihat berbagai proyek menarik yang telah saya kerjakan dari awal hingga selesai.
+                    </p>
+                  </a>
+                </NavigationMenuLink>
+              </li>
               <li>
                 <NavigationMenuLink as-child>
-                  <a href="#">Components</a>
+                  <a
+                    class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                    href="https://github.com/Flidoang" target="_blank" rel="noopener noreferrer"
+                  >
+                    <div class="text-sm font-medium leading-none flex items-center gap-2">
+                      <img :src="GithubIcon" alt="GitHub" class="w-4 h-4 dark:invert" /> GitHub
+                    </div>
+                    <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                      Repositori proyek open source saya.
+                    </p>
+                  </a>
                 </NavigationMenuLink>
+              </li>
+              <li>
                 <NavigationMenuLink as-child>
-                  <a href="#">Documentation</a>
-                </NavigationMenuLink>
-                <NavigationMenuLink as-child>
-                  <a href="#">Blocks</a>
+                  <a
+                    class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                    href="https://gitlab.com/Flidoang" target="_blank" rel="noopener noreferrer"
+                  >
+                    <div class="text-sm font-medium leading-none flex items-center gap-2">
+                      <img :src="GitlabIcon" alt="GitLab" class="w-4 h-4 dark:invert" /> GitLab
+                    </div>
+                    <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                      Repositori proyek lainnya di GitLab.
+                    </p>
+                  </a>
                 </NavigationMenuLink>
               </li>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
+
+        <!-- CONTACT MENU -->
         <NavigationMenuItem>
-          <NavigationMenuTrigger>With Icon</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Contact</NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul class="grid w-[200px] gap-4">
+            <ul class="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+              <li class="row-span-3">
+                <NavigationMenuLink as-child>
+                  <a
+                    class="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md cursor-pointer"
+                    @click.prevent="scrollToSection('contact')"
+                  >
+                    <div class="mt-4 mb-2 text-lg font-medium flex items-center gap-2">
+                      <Mail class="w-5 h-5" /> Hire Me
+                    </div>
+                    <p class="text-muted-foreground text-sm leading-tight">
+                      Punya ide brilian atau proyek menantang? Jangan ragu untuk menghubungi saya!
+                    </p>
+                  </a>
+                </NavigationMenuLink>
+              </li>
               <li>
                 <NavigationMenuLink as-child>
-                  <a href="#" class="flex-row items-center gap-2">
-                    <CircleHelpIcon />
-                    Backlog
+                  <a
+                    class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                    href="https://www.linkedin.com/in/raflihendarsyah" target="_blank" rel="noopener noreferrer"
+                  >
+                    <div class="text-sm font-medium leading-none flex items-center gap-2">
+                      <img :src="LinkedinIcon" alt="LinkedIn" class="w-4 h-4 dark:invert" /> LinkedIn
+                    </div>
+                    <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                      Mari terhubung secara profesional.
+                    </p>
                   </a>
                 </NavigationMenuLink>
+              </li>
+              <li>
                 <NavigationMenuLink as-child>
-                  <a href="#" class="flex-row items-center gap-2">
-                    <CircleIcon />
-                    To Do
-                  </a>
-                </NavigationMenuLink>
-                <NavigationMenuLink as-child>
-                  <a href="#" class="flex-row items-center gap-2">
-                    <CircleCheckIcon />
-                    Done
+                  <a
+                    class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                    href="https://www.instagram.com/fli_rafli22/" target="_blank" rel="noopener noreferrer"
+                  >
+                    <div class="text-sm font-medium leading-none flex items-center gap-2">
+                      <img :src="InstagramIcon" alt="Instagram" class="w-4 h-4 dark:invert" /> Instagram
+                    </div>
+                    <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                      Aktivitas harian dan momen berharga saya.
+                    </p>
                   </a>
                 </NavigationMenuLink>
               </li>

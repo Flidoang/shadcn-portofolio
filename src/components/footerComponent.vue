@@ -29,7 +29,7 @@ const scrollToTop = () => {
       <div class="flex items-center gap-5 order-1 md:order-2">
         <!-- Small Social Icons with Dock -->
         <div class="flex items-center gap-3 mr-4 h-[58px]">
-          <Dock direction="middle" class="!mt-0 !p-0 !border-none !bg-transparent backdrop-blur-none">
+          <Dock direction="middle" class="mt-0 p-0 border-none bg-transparent backdrop-blur-none">
             <DockIcon 
               v-for="(link, index) in socialLinks" 
               :key="index"

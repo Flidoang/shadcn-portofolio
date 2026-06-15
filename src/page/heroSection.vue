@@ -70,7 +70,7 @@ const isSmallScreen = computed(() => {
 </script>
 
 <template>
-  <main class="relative z-10 flex min-h-screen items-center justify-center px-6 py-24 md:py-0 lg:px-16 max-w-7xl mx-auto w-full overflow-hidden select-none">
+  <main id="home" class="relative z-10 flex min-h-screen items-center justify-center px-6 py-24 md:py-0 lg:px-16 max-w-7xl mx-auto w-full overflow-hidden select-none">
     
     <!-- Background Large Parallax Text -->
     <div 
