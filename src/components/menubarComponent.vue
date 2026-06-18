@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { 
-  User, Wrench, Briefcase, 
-  FolderGit2, Mail 
-} from "@lucide/vue";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -13,10 +9,6 @@ import {
 } from '@/components/ui/navigation-menu'
 
 import { LiquidGlass } from "@/components/ui/liquid-glass";
-import GithubIcon from '@/assets/menu/github.svg';
-import GitlabIcon from '@/assets/menu/gitlab.svg';
-import LinkedinIcon from '@/assets/menu/linkedin.svg';
-import InstagramIcon from '@/assets/menu/instagram.svg';
 
 const scrollToSection = (id: string) => {
   const el = document.getElementById(id);
@@ -43,9 +35,7 @@ const scrollToSection = (id: string) => {
                     class="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md cursor-pointer"
                     @click.prevent="scrollToSection('about')"
                   >
-                    <div class="mt-4 mb-2 text-lg font-medium flex items-center gap-2">
-                      <User class="w-5 h-5" /> About Me
-                    </div>
+                    <div class="mt-4 mb-2 text-lg font-medium">About Me</div>
                     <p class="text-muted-foreground text-sm leading-tight">
                       Mengenal lebih dekat siapa saya, perjalanan karir, dan passion saya dalam pengembangan web.
                     </p>
@@ -58,9 +48,7 @@ const scrollToSection = (id: string) => {
                     class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
                     @click.prevent="scrollToSection('tools')"
                   >
-                    <div class="text-sm font-medium leading-none flex items-center gap-2">
-                      <Wrench class="w-4 h-4" /> Tools & Tech
-                    </div>
+                    <div class="text-sm font-medium leading-none">Tools & Tech</div>
                     <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
                       Teknologi yang biasa saya gunakan.
                     </p>
@@ -73,9 +61,7 @@ const scrollToSection = (id: string) => {
                     class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
                     @click.prevent="scrollToSection('experience')"
                   >
-                    <div class="text-sm font-medium leading-none flex items-center gap-2">
-                      <Briefcase class="w-4 h-4" /> Experience
-                    </div>
+                    <div class="text-sm font-medium leading-none">Experience</div>
                     <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
                       Perjalanan edukasi dan pengalaman saya.
                     </p>
@@ -97,9 +83,7 @@ const scrollToSection = (id: string) => {
                     class="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md cursor-pointer"
                     @click.prevent="scrollToSection('projects')"
                   >
-                    <div class="mt-4 mb-2 text-lg font-medium flex items-center gap-2">
-                      <FolderGit2 class="w-5 h-5" /> Projects
-                    </div>
+                    <div class="mt-4 mb-2 text-lg font-medium">Projects</div>
                     <p class="text-muted-foreground text-sm leading-tight">
                       Lihat berbagai proyek menarik yang telah saya kerjakan dari awal hingga selesai.
                     </p>
@@ -112,9 +96,7 @@ const scrollToSection = (id: string) => {
                     class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
                     href="https://github.com/Flidoang" target="_blank" rel="noopener noreferrer"
                   >
-                    <div class="text-sm font-medium leading-none flex items-center gap-2">
-                      <img :src="GithubIcon" alt="GitHub" class="w-4 h-4 dark:invert" /> GitHub
-                    </div>
+                    <div class="text-sm font-medium leading-none">GitHub</div>
                     <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
                       Repositori proyek open source saya.
                     </p>
@@ -127,9 +109,7 @@ const scrollToSection = (id: string) => {
                     class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
                     href="https://gitlab.com/Flidoang" target="_blank" rel="noopener noreferrer"
                   >
-                    <div class="text-sm font-medium leading-none flex items-center gap-2">
-                      <img :src="GitlabIcon" alt="GitLab" class="w-4 h-4 dark:invert" /> GitLab
-                    </div>
+                    <div class="text-sm font-medium leading-none">GitLab</div>
                     <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
                       Repositori proyek lainnya di GitLab.
                     </p>
@@ -151,9 +131,7 @@ const scrollToSection = (id: string) => {
                     class="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md cursor-pointer"
                     @click.prevent="scrollToSection('contact')"
                   >
-                    <div class="mt-4 mb-2 text-lg font-medium flex items-center gap-2">
-                      <Mail class="w-5 h-5" /> Hire Me
-                    </div>
+                    <div class="mt-4 mb-2 text-lg font-medium">Hire Me</div>
                     <p class="text-muted-foreground text-sm leading-tight">
                       Punya ide brilian atau proyek menantang? Jangan ragu untuk menghubungi saya!
                     </p>
@@ -166,9 +144,7 @@ const scrollToSection = (id: string) => {
                     class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
                     href="https://www.linkedin.com/in/raflihendarsyah" target="_blank" rel="noopener noreferrer"
                   >
-                    <div class="text-sm font-medium leading-none flex items-center gap-2">
-                      <img :src="LinkedinIcon" alt="LinkedIn" class="w-4 h-4 dark:invert" /> LinkedIn
-                    </div>
+                    <div class="text-sm font-medium leading-none">LinkedIn</div>
                     <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
                       Mari terhubung secara profesional.
                     </p>
@@ -181,9 +157,7 @@ const scrollToSection = (id: string) => {
                     class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer"
                     href="https://www.instagram.com/fli_rafli22/" target="_blank" rel="noopener noreferrer"
                   >
-                    <div class="text-sm font-medium leading-none flex items-center gap-2">
-                      <img :src="InstagramIcon" alt="Instagram" class="w-4 h-4 dark:invert" /> Instagram
-                    </div>
+                    <div class="text-sm font-medium leading-none">Instagram</div>
                     <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
                       Aktivitas harian dan momen berharga saya.
                     </p>

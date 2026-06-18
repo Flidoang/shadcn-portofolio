@@ -25,71 +25,94 @@ export interface TimelineItemData {
 
 export const timelineData: TimelineItemData[] = [
   {
-    id: "senior-frontend",
-    label: "2024 - Pres",
+    id: "kazee-fullstack",
+    label: "Desember 2025 - Juni 2026",
     type: "job",
-    title: "Senior Frontend Engineer",
-    company: "TechCorp",
-    description: "Memimpin tim frontend developer dalam membangun aplikasi SaaS berkinerja tinggi. Merancang arsitektur sistem desain baru dan memigrasi kode lama ke Vue 3 & Vite untuk peningkatan kecepatan development serta performa rendering.",
-    tags: ["Vue 3", "TypeScript", "Pinia", "SaaS Architecture"],
+    title: "Full Stack Developer",
+    company: "Kazee Digital Indonesia",
+    description: "Mengembangkan dan memelihara aplikasi web berskala enterprise menggunakan kombinasi framework Vue.js (Front-End) dan NestJS (Back-End). Berhasil menyelesaikan dan menerapkan 2 modul utama selama masa internship, yaitu modul Shareform dan modul Generate Final Report. Merancang serta mengintegrasikan RESTful API yang efisien menggunakan NestJS untuk mendukung fungsionalitas pengolahan data yang dinamis. Membangun antarmuka pengguna (UI) yang responsif, interaktif, dan mudah digunakan (user-friendly) dengan Vue.js. Berkolaborasi aktif dengan tim internal untuk memastikan kualitas kode, optimasi performa aplikasi, dan ketepatan waktu rilis modul.",
+    tags: ["Vue.js", "NestJS", "RESTful API", "Full Stack"],
     testimonials: [
       {
-        quote: "Membangun sistem desain dari nol yang akhirnya mempercepat proses development seluruh tim hingga 40%.",
-        name: "Sistem Desain Vue 3",
-        designation: "TechCorp SaaS",
+        quote: "Membangun antarmuka yang sangat baik dan menyelesaikannya tepat waktu.",
+        name: "Proyek Modul Shareform",
+        designation: "Kazee Digital Indonesia",
         image: esg1,
       },
       {
-        quote: "Implementasi fitur realtime dashboard dengan grafik yang responsif dan sangat mulus.",
-        name: "Realtime Analytics",
-        designation: "TechCorp SaaS",
+        quote: "Mempercepat proses pengolahan data dengan RESTful API yang handal.",
+        name: "Modul Generate Final Report",
+        designation: "Kazee Digital Indonesia",
         image: esg2,
       }
     ]
   },
   {
-    id: "frontend-designer",
-    label: "2022 - 2024",
+    id: "sindigi-pm",
+    label: "September 2024 - Januari 2025",
     type: "job",
-    title: "Frontend Developer & UI/UX Designer",
-    company: "Creative Studio",
-    description: "Merancang dan mengembangkan website klien, toko e-commerce, dan platform pemasaran interaktif. Bekerja di titik temu antara desain dan kode untuk menciptakan pengalaman digital yang imersif, cepat, dan responsif.",
-    tags: ["Figma", "Vue 3", "GSAP Animations", "UI/UX Design"],
+    title: "Internship Project Manager",
+    company: "PT Sindigilive Teknologi Kreatif",
+    description: "Mengembangkan situs web O–Seek (Orphanage Seeker), sebuah platform untuk mencari panti asuhan di sekitar Bandung. Mengelola alur kerja proyek, mengembangkan dan memelihara linimasa proyek, serta melacak kemajuan dan mengatasi potensi keterlambatan. Menerapkan metodologi Scrum untuk pengembangan proyek, termasuk mengadakan daily stand-ups dan perencanaan sprint. Berkolaborasi dengan tim lintas fungsi, termasuk developer, desainer, dan pemangku kepentingan untuk memastikan kelancaran pelaksanaan proyek. Membuat dan mengelola dokumentasi proyek yang penting, termasuk Business Requirement Documents (BRD), Software Requirements Specification (SRS), dan laporan lainnya.",
+    tags: ["Project Management", "Scrum", "BRD", "SRS"],
     testimonials: [
       {
-        quote: "Eksplorasi antarmuka minimalis dengan transisi halaman yang elegan dan animasi mikro.",
-        name: "Nova E-Commerce",
-        designation: "Creative Studio",
+        quote: "Platform O-Seek berjalan sesuai timeline berkat manajemen proyek yang solid.",
+        name: "Proyek O-Seek",
+        designation: "PT Sindigilive",
         image: porto1,
       },
       {
-        quote: "Membuat desain sistem dan komponen UI yang dapat digunakan kembali untuk berbagai klien.",
-        name: "UI Component Library",
-        designation: "Creative Studio",
+        quote: "Dokumentasi yang rapi sangat membantu kelancaran tim pengembang.",
+        name: "Dokumentasi & SRS",
+        designation: "PT Sindigilive",
         image: porto2,
       }
     ]
   },
   {
-    id: "college-cs",
-    label: "2018 - 2022",
-    type: "education",
-    title: "Bachelor of Computer Science",
-    company: "University of Technology",
-    description: "Lulus dengan predikat sangat memuaskan (Honors), mengambil spesialisasi Software Engineering. Memiliki pemahaman kuat dalam sistem komputer, algoritma, manajemen database, dan interaksi manusia-komputer (HCI).",
-    tags: ["Algorithms", "Software Engineering", "HCI", "Web Accessibility"],
+    id: "esdm-dataentry",
+    label: "Agustus 2024 - Desember 2024",
+    type: "job",
+    title: "Data Entry Operator",
+    company: "Kementerian Energi dan Sumber Daya Mineral",
+    description: "Memproses data untuk memastikan akurasi dan kelengkapan sebelum diinput. Memasukkan data yang telah diproses ke dalam Microsoft Excel dengan format yang sesuai dan terstruktur query sistem dan kondisi yang telah ditentukan. Memproses dan mengunggah dokumen yang relevan berdasarkan data yang dimasukkan, serta memverifikasi kesesuaian dengan persyaratan yang berlaku. Memantau data baru yang diterima dari operator lapangan dan segera memproses serta memvalidasinya untuk memastikan kelengkapan dan akurasi.",
+    tags: ["Data Entry", "Microsoft Excel", "Data Validation", "Data Management"],
     testimonials: [
       {
-        quote: "Juara 1 Hackathon Nasional dengan proyek aplikasi aksesibilitas untuk penyandang disabilitas.",
-        name: "Hackathon Nasional 2021",
-        designation: "University of Technology",
+        quote: "Proses entry data dan validasi yang sangat akurat.",
+        name: "Input Data Lapangan",
+        designation: "Kementerian ESDM",
         image: porto3,
       },
       {
-        quote: "Proyek akhir berupa sistem pakar berbasis AI yang dipublikasikan dalam jurnal kampus.",
-        name: "Skripsi & Publikasi",
-        designation: "University of Technology",
+        quote: "Pemrosesan dokumen dilakukan dengan rapi sesuai standar query.",
+        name: "Validasi Dokumen",
+        designation: "Kementerian ESDM",
         image: porto4,
+      }
+    ]
+  },
+  {
+    id: "sindigi-flutter",
+    label: "Februari 2024 - Juli 2024",
+    type: "job",
+    title: "Internship Mobile Developer - Flutter",
+    company: "PT Sindigilive Teknologi Kreatif",
+    description: "Developing mobile (Bumi Desa E-Commerce BUMDES) untuk transaksi produk antara distributor dan pengguna di beberapa kabupaten di Tasikmalaya. Membuat desain UI yang responsif agar aplikasi dapat digunakan di berbagai perangkat dengan tata letak yang otomatis menyesuaikan untuk pengalaman pengguna yang baik. Mengintegrasikan Restful API di Flutter untuk mengambil data secara dinamis dan meningkatkan nilai guna aplikasi. Membuat animasi antarmuka untuk meningkatkan daya tarik visual aplikasi.",
+    tags: ["Flutter", "Mobile Development", "RESTful API", "UI Design"],
+    testimonials: [
+      {
+        quote: "Aplikasi e-commerce berhasil diimplementasikan dengan responsif.",
+        name: "Bumdes E-Commerce",
+        designation: "PT Sindigilive",
+        image: esg1,
+      },
+      {
+        quote: "Pengalaman pengguna lebih menarik berkat animasi antarmuka yang baik.",
+        name: "UI/UX & Animasi",
+        designation: "PT Sindigilive",
+        image: porto1,
       }
     ]
   }
