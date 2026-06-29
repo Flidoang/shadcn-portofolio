@@ -55,6 +55,108 @@ const processContributions = (days: RawContributionDay[]) => {
   return padded;
 };
 
+const compressAndFormatWeeks = (paddedDays: RawContributionDay[], maxWeeks: number) => {
+  const weeks: any[][] = [];
+  for (let i = 0; i < paddedDays.length; i += 7) {
+    weeks.push(paddedDays.slice(i, i + 7));
+  }
+
+  const getMonthStr = (dateStr: string) => {
+    if (!dateStr) return "";
+    return new Date(dateStr).toLocaleString("id-ID", { month: "short" });
+  };
+
+  const compressedWeeks: any[][] = [];
+  let emptyStreak: any[][] = [];
+
+  for (let i = 0; i < weeks.length; i++) {
+    const week = weeks[i];
+    const isEmpty = week.every((d: any) => d.intensity === 0);
+    
+    if (isEmpty) {
+      emptyStreak.push(week);
+    } else {
+      if (emptyStreak.length > 0) {
+        const firstMonth = getMonthStr(emptyStreak[0][0].date);
+        const lastMonth = getMonthStr(emptyStreak[emptyStreak.length - 1][6].date);
+        
+        // Hanya compress jika gap-nya menyentuh bulan Jan-Mei dan cukup panjang
+        const targetMonths = ["Jan", "Feb", "Mar", "Apr", "Mei"];
+        const isTargetGap = targetMonths.includes(firstMonth) || targetMonths.includes(lastMonth);
+        
+        if (emptyStreak.length >= 4 && isTargetGap) {
+          const gapLabel = firstMonth !== lastMonth ? `${firstMonth} - ${lastMonth}` : firstMonth;
+          const gapWeek = emptyStreak[0].map((d: any) => ({ ...d, intensity: 0, isGap: true, gapLabel }));
+          compressedWeeks.push(gapWeek);
+          if (emptyStreak.length >= 8) {
+             compressedWeeks.push(emptyStreak[0].map((d: any) => ({ ...d, intensity: 0, isGap: true, gapLabel: "" })));
+          }
+        } else {
+          compressedWeeks.push(...emptyStreak);
+        }
+        emptyStreak = [];
+      }
+      compressedWeeks.push(week);
+    }
+  }
+  
+  if (emptyStreak.length > 0) {
+    const firstMonth = getMonthStr(emptyStreak[0][0].date);
+    const lastMonth = getMonthStr(emptyStreak[emptyStreak.length - 1][6].date);
+    
+    const targetMonths = ["Jan", "Feb", "Mar", "Apr", "Mei"];
+    const isTargetGap = targetMonths.includes(firstMonth) || targetMonths.includes(lastMonth);
+    
+    if (emptyStreak.length >= 4 && isTargetGap) {
+      const gapLabel = firstMonth !== lastMonth ? `${firstMonth} - ${lastMonth}` : firstMonth;
+      const gapWeek = emptyStreak[0].map((d: any) => ({ ...d, intensity: 0, isGap: true, gapLabel }));
+      compressedWeeks.push(gapWeek);
+      if (emptyStreak.length >= 8) {
+         compressedWeeks.push(emptyStreak[0].map((d: any) => ({ ...d, intensity: 0, isGap: true, gapLabel: "" })));
+      }
+    } else {
+      compressedWeeks.push(...emptyStreak);
+    }
+  }
+
+  let finalWeeks = compressedWeeks.slice(-maxWeeks);
+  
+  // Pad if less than maxWeeks to maintain layout
+  while (finalWeeks.length < maxWeeks) {
+    finalWeeks.unshift(Array(7).fill({ intensity: 0, isPad: true, date: "" }));
+  }
+
+  const flatIntensities = finalWeeks.flatMap(w => w.map(d => d.intensity));
+
+  const labels: { name: string; colIndex: number }[] = [];
+  let prevMonth = "";
+
+  for (let w = 0; w < finalWeeks.length; w++) {
+    const firstDay = finalWeeks[w][0];
+    if (firstDay.isPad) continue;
+    
+    if (firstDay.isGap && firstDay.gapLabel) {
+      labels.push({ name: firstDay.gapLabel, colIndex: w });
+      prevMonth = firstDay.gapLabel;
+    } else if (!firstDay.isGap) {
+      const monthName = getMonthStr(firstDay.date);
+      if (monthName && monthName !== prevMonth) {
+        // Mencegah label saling menumpuk jika jaraknya kurang dari 3 minggu
+        if (labels.length > 0) {
+          const lastLabel = labels[labels.length - 1];
+          if (w - lastLabel.colIndex < 3 && !lastLabel.name.includes(" - ")) {
+            labels.pop();
+          }
+        }
+        labels.push({ name: monthName, colIndex: w });
+        prevMonth = monthName;
+      }
+    }
+  }
+
+  return { flatIntensities, labels };
+};
+
 const initGithubGrid = () => {
   const today = new Date();
   const mockDays: RawContributionDay[] = [];
@@ -76,27 +178,13 @@ const initGithubGrid = () => {
   }
   
   const padded = processContributions(mockDays);
-  const last280 = padded.slice(-280);
-  githubContributions.value = last280.map(day => day.intensity);
+  const formatted = compressAndFormatWeeks(padded, 40);
+  
+  githubContributions.value = formatted.flatIntensities;
+  githubMonthLabels.value = formatted.labels;
   totalCommits.value = 430;
   maxStreak.value = 15;
   isLiveGitHub.value = false;
-  
-  const labels: { name: string; colIndex: number }[] = [];
-  let prevMonth = "";
-  const totalWeeks = 40;
-  for (let w = 0; w < totalWeeks; w++) {
-    const dayData = last280[w * 7];
-    if (dayData && dayData.date) {
-      const dateObj = new Date(dayData.date);
-      const monthName = dateObj.toLocaleString("en-US", { month: "short" });
-      if (monthName !== prevMonth) {
-        labels.push({ name: monthName, colIndex: w });
-        prevMonth = monthName;
-      }
-    }
-  }
-  githubMonthLabels.value = labels;
 };
 
 const loadGitHubData = async () => {
@@ -114,8 +202,10 @@ const loadGitHubData = async () => {
     totalCommits.value = data.total.lastYear || 0;
     
     const padded = processContributions(data.contributions);
-    const last280 = padded.slice(-280);
-    githubContributions.value = last280.map(day => day.intensity);
+    const formatted = compressAndFormatWeeks(padded, 40);
+    
+    githubContributions.value = formatted.flatIntensities;
+    githubMonthLabels.value = formatted.labels;
     
     let current = 0;
     let max = 0;
@@ -129,22 +219,6 @@ const loadGitHubData = async () => {
     }
     maxStreak.value = max;
     isLiveGitHub.value = true;
-
-    const labels: { name: string; colIndex: number }[] = [];
-    let prevMonth = "";
-    const totalWeeks = 40;
-    for (let w = 0; w < totalWeeks; w++) {
-      const dayData = last280[w * 7];
-      if (dayData && dayData.date) {
-        const dateObj = new Date(dayData.date);
-        const monthName = dateObj.toLocaleString("en-US", { month: "short" });
-        if (monthName !== prevMonth) {
-          labels.push({ name: monthName, colIndex: w });
-          prevMonth = monthName;
-        }
-      }
-    }
-    githubMonthLabels.value = labels;
   } catch (error) {
     console.error("Failed to load live GitHub contributions, falling back to mock data:", error);
     initGithubGrid();
