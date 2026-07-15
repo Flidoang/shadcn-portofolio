@@ -35,11 +35,12 @@ import BlurReveal from "@/components/ui/blur-reveal/BlurReveal.vue";
         <!-- Box 2: Timezone Clock (col-span-1, row-span-1) -->
         <TimezoneCard />
 
-        <!-- Box 3: GitLab Contribution Calendar (col-span-3, row-span-1) -->
+        <!-- Box 3: GitHub contribution graph (col-span-3, row-span-1) -->
+        <GitHubCard />
+
+        <!-- Box 4: GitLab Contribution Calendar (col-span-3, row-span-1) -->
         <GitLabCard />
 
-        <!-- Box 4: GitHub contribution graph (col-span-3, row-span-1) -->
-        <GitHubCard />
       </BentoGrid>
     </div>
   </section>
