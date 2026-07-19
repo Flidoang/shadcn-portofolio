@@ -15,6 +15,10 @@ const openCV = () => {
   window.open("/CV_Rafli.pdf", "_blank");
 };
 
+const openJurnal = () => {
+  window.open("/Jurnal_Rafli_Hendarsyah.pdf", "_blank");
+};
+
 const scrollToContact = () => {
   const contactEl = document.getElementById("contact");
   if (contactEl) {
@@ -170,6 +174,14 @@ const isSmallScreen = computed(() => {
               background="#FDE2F3"
             >
               Download CV
+            </ShimmerButton>
+            <ShimmerButton 
+              @click="openJurnal"
+              shimmer-color="#FFFFFF"
+              class="px-6 py-3 text-sm font-semibold rounded-xl border border-[#917FB3]/50 text-[#2A2F4F] hover:opacity-90 transition-all duration-300 cursor-pointer"
+              background="#FDE2F3"
+            >
+              Download Jurnal
             </ShimmerButton>
             <button @click="scrollToContact" class="px-6 py-3 rounded-xl border border-[#917FB3]/50 bg-transparent text-[#FDE2F3] hover:bg-[#917FB3]/20 hover:border-[#E5BEEC]/60 hover:text-white transition-all duration-300 font-semibold text-sm cursor-pointer">
               Contact Me
